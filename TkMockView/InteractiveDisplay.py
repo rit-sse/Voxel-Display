@@ -30,11 +30,13 @@ while ("q" not in ui):
         # Uncomment for debugging purposes
         #print("drawing at ({0}, {1}, {2})".format(x, y, z))
 
-        vd.setVoxel(x,y,z, "cyan", "blue")
+        vd.drawVoxel(x,y,z)
         #vd.drawVoxel(x,y,z, "cyan", "blue")
+
     vd.flush()
     top.update()
 
+input("")
 print("unlinking pipe")
 os.unlink("/tmp/tmp_pipe")
 #top.mainloop()

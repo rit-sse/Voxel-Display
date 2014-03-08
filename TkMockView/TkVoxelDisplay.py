@@ -6,7 +6,7 @@ class TkVoxelDisplay():
         self.max_x = x 
         self.max_y = y 
         self.max_z = z 
-        self.voxels = {}
+        self.voxels = [[[False]*x for i in range(y)] for i in range(z)]
 
         self.can = tk_canvas
 
@@ -42,18 +42,16 @@ class TkVoxelDisplay():
         self.drawPane_FB(x, y, z,        f, o)
 
     # Sets voxel for the next flush
-    def setVoxel(self, x, y, z, f="", o="grey"):
-        self.voxels[(x,y,z)] = {"fill":f, "outline":o}
+    def setVoxel(self, x, y, z):
+        self.voxels[x][y][z] = not self.voxels[x][y][z]
 
     
     def flush(self):
         for j in range(self.max_x-1, -1, -1):
             for k in range(self.max_y-1, -1, -1):
                 for z in range(0, self.max_z, 1):
-                    if (j,k,z) in self.voxels.keys():
-                        f = self.voxels[(j,k,z)]["fill"]
-                        o = self.voxels[(j,k,z)]["outline"]
-                        self.drawVoxel(j, k, z, f, o)
+                    if self.voxels[j][k][z]:
+                        self.drawVoxel(j, k, z, "cyan", "blue")
                     else:
                         pass
                         #self.drawVoxel(j, k, z)
@@ -67,14 +65,14 @@ if __name__ == '__main__':
     can.focus_set()
 
     vd = TkVoxelDisplay(20,20,20, can)
-    vd.setVoxel(0, 0, 0, "green", "green")
-    vd.setVoxel(19, 0, 0, "cyan", "blue")
-    vd.setVoxel(0, 19, 0, "cyan", "blue")
-    vd.setVoxel(0, 0, 19, "cyan", "blue")
-    vd.setVoxel(19, 19, 0, "cyan", "blue")
-    vd.setVoxel(0, 19, 19, "cyan", "blue")
-    vd.setVoxel(19, 0, 19, "cyan", "blue")
-    vd.setVoxel(19, 19, 19, "cyan", "blue")
+    vd.setVoxel(0, 0, 0)
+    vd.setVoxel(19, 0, 0)
+    vd.setVoxel(0, 19, 0)
+    vd.setVoxel(0, 0, 19)
+    vd.setVoxel(19, 19, 0)
+    vd.setVoxel(0, 19, 19)
+    vd.setVoxel(19, 0, 19)
+    vd.setVoxel(19, 19, 19)
     vd.flush()
 
     top.mainloop()

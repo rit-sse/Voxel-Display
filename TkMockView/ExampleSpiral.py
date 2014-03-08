@@ -2,10 +2,10 @@ import time
 w = open("/tmp/tmp_pipe", 'w')
 
 x, y, z = 0, 19, 0
-for i in range(20):
+for i in range(0, 19):
     z += 1
     for j in range(4):
-        for k in range(19):
+        for k in range(0, 19):
             #print("i: {0}, j: {1}, k: {2}".format(i, j, k))
             #print("x: {0}, y: {1}, z: {2}".format(x, y, z))
             if (j == 0):
