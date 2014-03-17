@@ -20,14 +20,14 @@ class Embedded extends PApplet {
 
   override def setup() = {
     // original setup code here ...
-    size(400, 400);
+    size(400, 400, PConstants.P3D);
 
     // prevent thread from starving everything else
     noLoop();
   }
 
   override def draw() = {
-    rect( 40, 40, 20, 20)
+    box( 40, 40, 20 )
   }
 
   override def mousePressed() = {
