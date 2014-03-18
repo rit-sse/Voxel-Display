@@ -27,7 +27,11 @@ class Embedded extends PApplet {
   }
 
   override def draw() = {
-    box( 40, 40, 20 )
+    fill(155, 0, 0)
+    box( 60, 60, 20 )
+    fill(0, 130, 0)
+    translate(100, 100, 00)
+    box( 60, 60, 20 )
   }
 
   override def mousePressed() = {
