@@ -12,6 +12,8 @@ object Main{
     frame.add( app )
     app.init()
     frame.setVisible( true )
+
+    Threads.init( app )
   }
 
 }
@@ -20,7 +22,7 @@ object Main{
 
 class Embedded extends PApplet {
 
-  val voxelHash = new HashMap[(Float, Float, Float), Boolean]()  { override def default(key:(Float, Float, Float)) = false }
+  var voxelHash = new HashMap[(Float, Float, Float), Boolean]()  { override def default(key:(Float, Float, Float)) = false }
 
   val vEdge = 8     // max number of voxels in any one direction
   val vSize = 20    // size of voxels
@@ -34,6 +36,23 @@ class Embedded extends PApplet {
   val uy = 1
   val uz = 0
 
+
+
+  def setVoxels( voxels : Set[Voxel] ) = {
+
+    def voxelTo3F( v : Voxel ) = {
+        (v.x toFloat, v.y toFloat, v.z toFloat)
+    }
+
+
+
+    voxelHash =  HashMap.empty
+    voxels.foreach( v => (voxelHash +=  (voxelTo3F(v) -> true) ) )
+
+    // voxelHash = voxels map { x => (voxelTo3F(x), true) } toMap
+
+
+  }
 
   override def setup() = {
     // original setup code here ...

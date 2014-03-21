@@ -14,10 +14,26 @@ object Threads {
     val lineIterator = istream.getLines
 
     for( l <- istream.getLines ) {
-        println ( l );
+        moxel.setVoxels( parseLine(l) )
+        // moxel.setVoxels( Set(Voxel(0,0,0), Voxel(0, 1, 1) ) )
     }
 
   }
+
+
+
+  def parseLine( line : String ) : Set[Voxel] = {
+    (line split ",")
+      .map { s => s.trim}
+      .map { triple =>
+        val nums = triple split " "
+        Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt) 
+      } toSet
+
+  }
+
+
+
 
 
 }
