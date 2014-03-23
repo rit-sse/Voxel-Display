@@ -3,11 +3,137 @@
 /* global VoxelDisplay: true */
 /* jslint browser: true */
 
+var State = function(){}; //State base class. Because reasons.
+State.prototype.handleByte = function(byte) {
+  return this;
+};
+
+var Awaiting = function(mock) {
+  if (!(this instanceof Awaiting)) {return new Awaiting(mock);}
+  
+  this.mock = mock;
+};
+Awaiting.prototype = Object.create( State.prototype );
+
+Awaiting.prototype.handleByte = function(byte) {
+  switch (byte) {
+    case 0x10: { //Prepare to recieve yplanes
+      return new YPlaneBuilder(this.mock);
+    }
+    case 0x9: { //Prepare to recieve xplanes
+      return new XPlaneBuilder(this.mock);
+    }
+    default: {
+      return this; //Invalid bit pattern when awaiting input
+    }
+  }
+};
+
+var XPlaneBuilder = function(mock){
+  if (!(this instanceof XPlaneBuilder)) {return new XPlaneBuilder(mock);}
+  this.row = 0;
+  this.col = 0;
+  this.zlevel = 0;
+  this.xplanes = [];
+  for (var i=0;i<mock.width;i++) {
+    this.xplanes[i] = [];
+    for (var j=0;j<mock.depth+1;j++) {
+      this.xplanes[i][j] = [];
+      //for (var k=0;k<mock.height;k++) {
+        //this.xplanes[i][j][k] = null;
+      //}
+    }
+  }
+  this.mock = mock;
+};
+XPlaneBuilder.prototype = Object.create( State.prototype );
+
+XPlaneBuilder.prototype.handleByte = function(byte){
+  switch (byte) {
+    case 0x10: {
+      this.mock.pushXPlanes(this.xplanes);
+      return new YPlaneBuilder(this.mock);
+    }
+    case 0xff: {
+      this.mock.pushXPlanes(this.xplanes);
+      return new Awaiting(this.mock);
+    }
+    default: {
+      this.xplanes[this.col][this.row][this.zlevel] = byte;
+      this.zlevel += 1;
+      if (this.zlevel>this.mock.height) {
+        this.zlevel = 0;
+        this.row += 1;
+        if (this.row>this.mock.depth+1) {
+          this.row = 0;
+          this.col += 1;
+          if (this.col>this.mock.width) {
+            //FWAAAAT!??!!
+            console.log('Terrible, terrible parsing errors happened.');
+          }
+        }
+      }
+      return this;
+    }
+  }
+};
+
+var YPlaneBuilder = function(mock){
+  if (!(this instanceof YPlaneBuilder)) {return new YPlaneBuilder(mock);}
+  this.row = 0;
+  this.col = 0;
+  this.zlevel = 0;
+  this.yplanes = [];
+  for (var i=0;i<mock.width+1;i++) {
+    this.yplanes[i] = [];
+    for (var j=0;j<mock.depth;j++) {
+      this.yplanes[i][j] = [];
+      //for (var k=0;k<mock.height;k++) {
+        //this.xplanes[i][j][k] = null;
+      //}
+    }
+  }
+  this.mock = mock;
+};
+YPlaneBuilder.prototype = Object.create( State.prototype );
+
+YPlaneBuilder.prototype.handleByte = function(byte){
+  switch (byte) {
+    case 0x9: {
+      this.mock.pushYPlanes(this.yplanes);
+      return new XPlaneBuilder(this.mock);
+    }
+    case 0xff: {
+      //Push out
+      this.mock.pushYPlanes(this.yplanes);
+      return new Awaiting(this.mock);
+    }
+    default: {
+      this.yplanes[this.col][this.row][this.zlevel] = byte;
+      this.zlevel += 1;
+      if (this.zlevel>this.mock.height) {
+        this.zlevel = 0;
+        this.row += 1;
+        if (this.row>this.mock.depth) {
+          this.row = 0;
+          this.col += 1;
+          if (this.col>this.mock.width+1) {
+            //FWAAAAT!??!!
+            console.log('Terrible, terrible parsing errors happened.');
+          }
+        }
+      }
+      return this;
+    }
+  }
+};
+
 var JSVoxels = function() {
   if (!(this instanceof JSVoxels)) {return new JSVoxels();}
   var self = this;
   
   this.readbuffer = new Uint8Array(0);
+  this.state = new Awaiting(this);
   this.scene = new THREE.Scene(); 
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
   this.renderer = new THREE.WebGLRenderer(); 
@@ -85,7 +211,11 @@ var JSVoxels = function() {
     self.camera.lookAt(ORIGIN);
   }, true);
   
-  this.vd = new VoxelDisplay(8,8,8,this);
+  this.width = 8;
+  this.depth = 8;
+  this.height = 8;
+  
+  this.vd = new VoxelDisplay(this.width,this.depth,this.height,this);
   
   this.count = 0;
   function render() {
@@ -128,14 +258,10 @@ function bufferConcat(buf1, buf2) {
   return buf;
 }
 
-JSVoxels.prototype.parseByte = function(state, byte) {
-  
-};
-
 JSVoxels.prototype.write = function(bytes) {
   this.readbuffer = bufferConcat(this.readbuffer, bytes);
   while (this.readbuffer.length>0) {
-    this.parseByte(this.state, this.readbuffer[0]);
+    this.state = this.state.handleByte(this.readbuffer[0]);
     this.readbuffer = this.readbuffer.subarray(1);
   }
 };
@@ -147,6 +273,14 @@ JSVoxels.prototype.toggleVoxel = function() {
   
   this.vd.toggleVoxel(x,y,z);
   this.vd.flush();
+};
+
+JSVoxels.prototype.pushXPlanes = function(planes) {
+  //TODO: Render planes
+};
+
+JSVoxels.prototype.pushYPlanes = function(planes) {
+  //TODO: Render planes
 };
 
 document.addEventListener('DOMContentLoaded', function() {
