@@ -15,5 +15,16 @@
     </style>
   </head>
   <body>
+    <div class="header" style="position: absolute; z-index: 100; left: 0; top: 0;">
+      <div class="framecount" style="display: inline;"><b>~ FPS</b></div>
+      
+      <label for="x">X</label>
+      <input id="x" class="x" type="number"></input>
+      <label for="y">Y</label>
+      <input id="y" class="y" type="number"></input>
+      <label for="z">Z</label>
+      <input id="z" class="z" type="number"></input>
+      <button onclick="MockDisplay.toggleVoxel()">Toggle</button>
+    </div>
   </body>
 </html>

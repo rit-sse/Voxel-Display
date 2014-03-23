@@ -5,9 +5,9 @@
 
 var JSVoxels = function() {
   if (!(this instanceof JSVoxels)) {return new JSVoxels();}
+  var self = this;
   
-  
-
+  this.readbuffer = new Uint8Array(0);
   this.scene = new THREE.Scene(); 
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
   this.renderer = new THREE.WebGLRenderer(); 
@@ -40,15 +40,12 @@ var JSVoxels = function() {
   var skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 1000, 1000, 1000, 1, 1, 1, null, true ), material3 );
   this.scene.add( skyboxMesh );
 
-  
   this.camera.position.z = 5;
-  this.render();
-  
 
   window.addEventListener( 'resize', function() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    self.camera.aspect = window.innerWidth / window.innerHeight;
+    self.camera.updateProjectionMatrix();
+    self.renderer.setSize( window.innerWidth, window.innerHeight );
   }, false );
 
   var ORIGIN = new THREE.Vector3( 0, 0, 0 );
@@ -62,10 +59,10 @@ var JSVoxels = function() {
   var KEY_DOWN = 40;
 
   window.addEventListener("keydown", function(e) {
-    this.camera.lookAt(ORIGIN);
+    self.camera.lookAt(ORIGIN);
     var vector = new THREE.Vector3( 0, 0, -1 );
-    vector.applyQuaternion( this.camera.quaternion );
-    var dist = this.camera.position.length();
+    vector.applyQuaternion( self.camera.quaternion );
+    var dist = self.camera.position.length();
     vector = vector.multiplyScalar(dist*-1);
 
     var key = e.keyCode;
@@ -84,25 +81,74 @@ var JSVoxels = function() {
     }
 
     var newpos = vector.applyAxisAngle(axis.normalize(), 0.01);
-    this.camera.position = newpos;
-    this.camera.lookAt(ORIGIN);
+    self.camera.position = newpos;
+    self.camera.lookAt(ORIGIN);
   }, true);
   
   this.vd = new VoxelDisplay(8,8,8,this);
+  
+  this.count = 0;
+  function render() {
+    requestAnimationFrame(render);  
+    self.count += 1;
+    self.renderer.render(self.scene, self.camera); 
+  }
+  
+  setInterval(function() {
+    document.querySelector(".framecount").innerHTML = "<b>"+self.count+" FPS</b>";
+    self.count = 0;
+  }, 1000);
+  render();
 };
 
-JSVoxels.prototype.render = function() {
-  requestAnimationFrame(this.render);  
+function bufferConcat(buf1, buf2) {
+  if (buf1.length===0) { //Speedier cases
+    return new Uint8Array(buf2);
+  }
+  if (buf2.length===0) {
+    return new Uint8Array(buf1);
+  }
   
-  this.renderer.render(this.scene, this.camera); 
+  var buf = new Uint8Array(buf1.length+buf2.length); //Make a new buffer of the right length
+  var done1 = false, done2 = false;
+  var p1=0,p2=0;
+  while (!(done1 && done2)) {
+    buf[p1] = buf1[p1]; //2 arrays, one loop. Boom schakalaka.
+    buf[buf1.length+p2] = buf2[p2];
+    if (p1<buf1.length)
+      ++p1;
+    else
+      done1 = true;
+    
+    if (p2<buf2.length)
+      ++p2;
+    else
+      done2 = true;
+  }
+  return buf;
+}
+
+JSVoxels.prototype.parseByte = function(state, byte) {
+  
 };
 
 JSVoxels.prototype.write = function(bytes) {
-  for (var byte in bytes) {
-    console.log(bytes);
+  this.readbuffer = bufferConcat(this.readbuffer, bytes);
+  while (this.readbuffer.length>0) {
+    this.parseByte(this.state, this.readbuffer[0]);
+    this.readbuffer = this.readbuffer.subarray(1);
   }
 };
 
+JSVoxels.prototype.toggleVoxel = function() {
+  var x = Math.floor(document.querySelector(".x").value);
+  var y = Math.floor(document.querySelector(".y").value);
+  var z = Math.floor(document.querySelector(".z").value); //Math.floor likes to coerce things into numbers
+  
+  this.vd.toggleVoxel(x,y,z);
+  this.vd.flush();
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-  JSVoxels();
+  MockDisplay = new JSVoxels();
 });

@@ -9,19 +9,19 @@ VoxelDisplay = function(width, depth, height, subject) {
 };
 
 VoxelDisplay.prototype.zero = function() {
-  this.voxels = {};
-  this.xplanes = {};
-  this.yplanes = {};
+  this.voxels = [];
+  this.xplanes = [];
+  this.yplanes = [];
   
   for (var x=0; x<this.width; x++) {
-    this.voxels[x] = {};
-    this.xplanes[x] = {};
-    this.yplanes[x] = {};
+    this.voxels[x] = [];
+    this.xplanes[x] = [];
+    this.yplanes[x] = [];
     
-    for (var y=0; x<this.depth; y++) {
-      this.voxels[x][y] = {};
-      this.xplanes[x][y] = {};
-      this.yplanes[x][y] = {};
+    for (var y=0; y<this.depth; y++) {
+      this.voxels[x][y] = [];
+      this.xplanes[x][y] = [];
+      this.yplanes[x][y] = [];
       
       for (var z=0; z<this.height; z++) {
         this.voxels[x][y][z] = false;
@@ -92,35 +92,40 @@ VoxelDisplay.prototype.flush = function(subject) {
   var buf = new Uint8Array((this.xplanes.length*this.xplanes[0].length*this.xplanes[0][0].length)+
                            (this.yplanes.length*this.yplanes[0].length*this.yplanes[0][0].length)+3);
   
-  buf.push(0x9); //Indicate x planes start
+  var pos = 0;
+  buf[pos] = 0x9; //Indicate x planes start
+  pos++;
   
   for (var planecount=0;planecount<this.xplanes.length;planecount++) {
-    for (var colcount=0;colcount<this.xplanes[planecount];colcount++) {
-      for (var zindex=0;zindex<this.xplanes[planecount][colcount];zindex++) {
+    for (var colcount=0;colcount<this.xplanes[planecount].length;colcount++) {
+      for (var zindex=0;zindex<this.xplanes[planecount][colcount].length;zindex++) {
         if (this.xplanes[planecount][colcount][zindex]) {
-          buf.push(1);  
+          buf[pos] = 1; 
         } else {
-          buf.push(0); 
+          buf[pos] = 0;
         }
+        pos++;
       }
     }
   }
   
-  buf.push(0x10); //indicate y planes start
+  buf[pos] = 0x10; //indicate y planes start
+  pos++;
   
   for (var planecount=0;planecount<this.yplanes.length;planecount++) {
-    for (var colcount=0;colcount<this.yplanes[planecount];colcount++) {
-      for (var zindex=0;zindex<this.yplanes[planecount][colcount];zindex++) {
+    for (var colcount=0;colcount<this.yplanes[planecount].length;colcount++) {
+      for (var zindex=0;zindex<this.yplanes[planecount][colcount].length;zindex++) {
         if (this.yplanes[planecount][colcount][zindex]) {
-          buf.push(1);  
+          buf[pos] = 1;  
         } else {
-          buf.push(0); 
+          buf[pos] = 0; 
         }
+        pos++;
       }
     }
   }
   
-  buf.push(0xff); //indicate finish
+  buf[pos] = 0xff; //indicate finish
   
   subject.write(buf);
 };
