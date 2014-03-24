@@ -6,3 +6,15 @@ RIT/SSE - Voxel Display Project
 ---
 
 Society of Software Engineers' project to build a 3D display using voxels in a real 3D space.
+
+Want to run the preview display?
+----
+First, make sure you have the appropriate dependencies for both the preview and the example.
+
+In the 'mock-view' folder, run the following command
+    
+    $ sbt run
+
+In the 'example-apps' folder, run any of the available examples!
+    
+    $ python3 example.py
