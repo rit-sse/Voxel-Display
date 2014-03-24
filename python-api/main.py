@@ -23,37 +23,9 @@ class VoxelDisplay( threading.Thread ):
       # I'm sorry
       line = ""
       line = ",".join([ " ".join( str(i) for i in v) for v in self.voxels ])
-      print line
+      print(line)
       if len(line) > 0:
-        self.sock.send( line  + "\n" )
+        self.sock.send( bytes(line  + "\n", 'UTF-8') )
 
   def setVoxel( self, x, y, z ):
     self.voxels += [(x,y, z)]
-
-
-
-
-
-class MyDisplay(VoxelDisplay):
-
-  def __init__( self ):
-    VoxelDisplay.__init__( self )
-
-    self.frameRate =  10
-    self.i = 0
-
-
-  def draw( self ):
-    self.setVoxel( 1, 0, self.i % 5 )
-    # self.setVoxel( 1, 1, self.i % 5 )
-    # self.setVoxel( 1, 2, self.i % 5 )
-    # self.setVoxel( 0, 1, self.i % 5 )
-    # self.setVoxel( 2, 1, self.i % 5 )
-    self.i += 1
-
-
-
-e = MyDisplay()
-e.start()
-
-print "OK"
