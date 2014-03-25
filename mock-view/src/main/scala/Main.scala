@@ -22,7 +22,7 @@ object Main{
 
 class Embedded extends PApplet {
 
-  var voxelHash = new HashMap[(Float, Float, Float), Boolean]()  { override def default(key:(Float, Float, Float)) = false }
+  var voxelSet = Set[Voxel]()
 
   val vEdge = 8     // max number of voxels in any one direction
   val vSize = 20    // size of voxels
@@ -39,19 +39,7 @@ class Embedded extends PApplet {
 
 
   def setVoxels( voxels : Set[Voxel] ) = {
-
-    def voxelTo3F( v : Voxel ) = {
-        (v.x toFloat, v.y toFloat, v.z toFloat)
-    }
-
-
-
-    voxelHash =  HashMap.empty
-    voxels.foreach( v => (voxelHash +=  (voxelTo3F(v) -> true) ) )
-
-    // voxelHash = voxels map { x => (voxelTo3F(x), true) } toMap
-
-
+    voxelSet = voxels
   }
 
   override def setup() = {
@@ -60,36 +48,6 @@ class Embedded extends PApplet {
 
     // prevent thread from starving everything else
     //noLoop();
-
-
-    //PROGRAM
-
-    //  Draw Corners
-    setVoxel( 0, 0, 0 )
-    setVoxel( 0, 0, 8 )
-    setVoxel( 0, 8, 0 )
-    setVoxel( 0, 8, 8 )
-    setVoxel( 8, 0, 0 )
-    setVoxel( 8, 0, 8 )
-    setVoxel( 8, 8, 0 )
-    setVoxel( 8, 8, 8 )
-
-    //  Draw Shape
-    setVoxel( 3, 3, 3 )
-    setVoxel( 3, 3, 4 )
-    setVoxel( 3, 4, 3 )
-    setVoxel( 4, 3, 3 )
-
-    setVoxel( 3, 3, 6 )
-    setVoxel( 3, 3, 8 )
-
-    setVoxel( 6, 3, 3 )
-    setVoxel( 8, 3, 3 )
-
-    setVoxel( 3, 6, 3 )
-    setVoxel( 3, 8, 3 )
-
-    setVoxel( 3, 3, 3 )
   }
 
   def voxel(x: Float, y: Float, z: Float, s: Float, a: Float) = {
@@ -146,17 +104,10 @@ class Embedded extends PApplet {
 
     //Draw Voxels
     stroke(0, 0, 0, 0)      // no edges
-    for ( (x, y, z) <- voxelHash keys ) {
-      if (voxelHash((x, y, z)))
-        voxel(x*vSize, y*vSize, z*vSize, vSize, 155)
+    voxelSet map { v => 
+      println( f"x: $v.x, y: $v.y, z: $v.z" )
+      voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize, 155)
     }
-  }
-
-  def setVoxel(x: Float, y: Float, z: Float) = {
-    if (voxelHash contains (x, y, z))
-      voxelHash += (x, y, z) -> !voxelHash(x, y, z)
-    else
-      voxelHash += (x, y, z) -> true
   }
 
   override def mousePressed() = {
