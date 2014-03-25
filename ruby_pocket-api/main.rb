@@ -34,9 +34,7 @@ class VoxelDisplay
     # puts for now, socket code for actual implementation
     res = @voxelHash.select { |k,v| v } ::keys.map {|k| k.join(?\ )} ::join(", ")
     puts res
-    if (res.size > 0)
-      @socket.write(res+"\n")
-    end
+    @socket.write(res+"\n")
   end
 
 end

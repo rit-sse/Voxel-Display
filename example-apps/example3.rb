@@ -10,4 +10,7 @@ while true
     sleep(0.5)
   end
   vd.clear_state
+  vd.flush
+  print("... ")
+  gets
 end
