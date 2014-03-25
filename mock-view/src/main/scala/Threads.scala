@@ -9,7 +9,7 @@ object Threads {
     val clisock = ssock.accept()
     println( "Accepted a socket" )
     val ostream = clisock.getOutputStream
-    val istream = Source.fromInputStream(  clisock.getInputStream ) 
+    val istream = Source.fromInputStream(  clisock.getInputStream )
 
     val lineIterator = istream.getLines
 
@@ -31,7 +31,7 @@ object Threads {
         .map { s => s.trim}
         .map { triple =>
           val nums = triple split " "
-          Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt) 
+          Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt)
         } toSet
     }
 
