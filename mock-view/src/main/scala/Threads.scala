@@ -23,12 +23,17 @@ object Threads {
 
 
   def parseLine( line : String ) : Set[Voxel] = {
-    (line split ",")
-      .map { s => s.trim}
-      .map { triple =>
-        val nums = triple split " "
-        Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt) 
-      } toSet
+    if (line.size == 0) {
+      Set()
+    }
+    else {
+      (line split ",")
+        .map { s => s.trim}
+        .map { triple =>
+          val nums = triple split " "
+          Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt) 
+        } toSet
+    }
 
   }
 
