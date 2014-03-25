@@ -6,33 +6,44 @@ object Threads {
 
   def init( moxel : Embedded )  = {
     val ssock =  new ServerSocket(8999)
-    val clisock = ssock.accept()
-    println( "Accepted a socket" )
-    val ostream = clisock.getOutputStream
-    val istream = Source.fromInputStream(  clisock.getInputStream )
 
-    val lineIterator = istream.getLines
+    while( true ) {
+      val clisock = ssock.accept()
+      println( "Accepted a socket" )
+      val ostream = clisock.getOutputStream
+      val istream = Source.fromInputStream(  clisock.getInputStream )
 
-    for( l <- istream.getLines ) {
-        moxel.setVoxels( parseLine(l) )
-        // moxel.setVoxels( Set(Voxel(0,0,0), Voxel(0, 1, 1) ) )
+      val lineIterator = istream.getLines
+
+      for( l <- istream.getLines ) {
+          parseLine(l) match {
+            case Some(s) => moxel.setVoxels( s )
+            case None =>  Unit
+          }
+      }
+
+      println( "Ran out of lines" )
+      clisock.close()
+
     }
-
   }
 
 
 
-  def parseLine( line : String ) : Set[Voxel] = {
+  def parseLine( line : String ) : Option[Set[Voxel]] = {
     if (line.size == 0) {
-      Set()
+      Some(Set())
+    }
+    else if( ! line.matches ( "(\\d \\d \\d)(,(\\s?)\\d \\d \\d)*" ) ) {
+      println( "Malformed line" ); None
     }
     else {
-      (line split ",")
+      Some((line split ",")
         .map { s => s.trim}
         .map { triple =>
           val nums = triple split " "
           Voxel( nums( 0 ) toInt, nums(1) toInt, nums(2) toInt)
-        } toSet
+        } toSet)
     }
 
   }
