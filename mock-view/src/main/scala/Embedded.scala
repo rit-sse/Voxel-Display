@@ -89,7 +89,6 @@ class Embedded extends PApplet {
     //Draw Voxels
     stroke(0, 0, 0, 0)      // no edges
     voxelSet map { v => 
-      println( f"x: $v.x, y: $v.y, z: $v.z" )
       voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize, 155)
     }
   }
