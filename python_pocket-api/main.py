@@ -33,10 +33,10 @@ class VoxelDisplay():
     self.blinkVoxels.add( (x,y,z) )
 
   def toggleVoxel( self, x, y, z ):
-    self.voxels = self.voxels ^ set( [(x,y,z)] )
+    self.voxels ^= set( [(x,y,z)] )
 
   def toggleBlinkVoxel( self, x, y, z ):
-    self.blinkVoxels = self.blinkVoxels ^ set( [(x,y,z)] )
+    self.blinkVoxels ^= set( [(x,y,z)] )
 
   def getState( self ):
     return self.voxels
