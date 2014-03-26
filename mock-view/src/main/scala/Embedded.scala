@@ -22,7 +22,6 @@ class Embedded extends PApplet {
   val uz = 0
 
 
-
   def setVoxels( voxels : Set[Voxel] ) = {
     voxelSet = voxels
   }
@@ -88,8 +87,10 @@ class Embedded extends PApplet {
 
   override def draw() = {
     background(255, 255, 255)
-    val cXZ = cameraXZ()
-    camera(cXZ._1, mouseY-200, cXZ._2, cx, cy, cz, 0, 1, 0)
+    if (mousePressed) {
+      val cXZ = cameraXZ()
+      camera(cXZ._1, mouseY-200, cXZ._2, cx, cy, cz, 0, 1, 0)
+    }
 
     //Draw Voxels
     stroke(0, 0, 0, 0)      // no edges

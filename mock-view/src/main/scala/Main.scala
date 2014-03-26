@@ -6,7 +6,7 @@ import math._
 object Main{
 
   def main( args : Array[String] ) = {
-    val frame = new JFrame( "Moxel Display" )
+    val frame = new JFrame( "Moxel Display (click to move the view)" )
     frame.setSize( 600, 600 )
     val app = new Embedded()
     frame.add( app )
