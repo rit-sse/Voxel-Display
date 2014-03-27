@@ -8,6 +8,7 @@ object Threads {
     val ssock =  new ServerSocket(8999)
 
     while( true ) {
+      println( "Waiting for a socket connection" )
       val clisock = ssock.accept()
       println( "Accepted a socket" )
       val ostream = clisock.getOutputStream
@@ -32,7 +33,7 @@ object Threads {
           }
       }
 
-      println( "Ran out of lines" )
+      println( "Received EOF, terminating socket" )
       clisock.close()
 
     }
