@@ -18,3 +18,13 @@ In the 'mock-view' folder, run the following command
 In the 'example-apps' folder, run any of the available examples!
     
     $ python3 example.py
+
+Known Bugs with Preview
+----
+While the moxel-display is most triumphant, as of right now, there's a few glitches when it first starts up.
+
+Be sure to **(in order)**:
+
+A) Resize the window
+
+B) Click inside the view
