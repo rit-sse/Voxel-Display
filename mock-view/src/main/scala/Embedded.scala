@@ -7,7 +7,6 @@ import math._
 class Embedded extends PApplet {
 
   var voxelSet = Set[Voxel]()
-  var blinkSet = Set[Voxel]()
 
   val vEdge = 8     // max number of voxels in any one direction
   val vSize = 20    // size of voxels
@@ -24,10 +23,6 @@ class Embedded extends PApplet {
 
   def setVoxels( voxels : Set[Voxel] ) = {
     voxelSet = voxels
-  }
-
-  def setBlinkVoxels( voxels : Set[Voxel] ) = {
-    blinkSet = voxels
   }
 
   override def setup() = {
@@ -76,7 +71,7 @@ class Embedded extends PApplet {
   // return an x-z position around the center, takes the mouse X position
   def cameraXZ() : (Float, Float) = {
     val theta = ( (mouseX toFloat) / (width*0.75 toFloat) ) * (2.0*3.14)
-    val r = 400 
+    val r = 300 
     val a = cx
     val b = cy
     val j = (a + r*cos(theta)) toFloat
@@ -94,12 +89,6 @@ class Embedded extends PApplet {
 
     //Draw Voxels
     stroke(0, 0, 0, 0)      // no edges
-
-    if ( (millis()%1000) > 500 ) {
-      blinkSet map { v => 
-        voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize, 155)
-      }
-    }
 
     voxelSet map { v => 
       voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize, 155)

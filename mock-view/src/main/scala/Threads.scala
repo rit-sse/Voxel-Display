@@ -17,19 +17,9 @@ object Threads {
       val lineIterator = istream.getLines
 
       for( l <- istream.getLines ) {
-          // Send line to blink set
-          if ( l slice (0, 1) matches "b" ) {
-              parseLine(l drop 1) match {
-                case Some(s) => moxel.setBlinkVoxels( s )
-                case None =>  Unit
-              }
-          }
-          // Send line to normal set
-          else {
-              parseLine(l) match {
-                case Some(s) => moxel.setVoxels( s )
-                case None =>  Unit
-              }
+          parseLine(l) match {
+              case Some(s) => moxel.setVoxels( s )
+              case None =>  Unit
           }
       }
 
