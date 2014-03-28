@@ -2,7 +2,7 @@ require '../ruby_pocket-api/main'
 require 'curses'
 include Curses
 
-vd = VoxelDisplay.new()
+vd = VoxelDisplay.new
 vd.clear_state
 vd.flush
 
@@ -40,7 +40,7 @@ while (/q/ =~ ui) == nil
     addstr "\r| #{ui}#{" "*(20-ui.size)}:Enter Coords "
     valid = false
     vd.clear_state(false, true)
-  elsif ((/([0-7]\s){2}[0-7]/ =~ ui) == nil)
+  elsif ((/^([0-7]\s){2}[0-7]$/ =~ ui) == nil)
     attrset(color_pair(COLOR_RED))
     addstr "\r| #{ui}#{" "*(20-ui.size)}:Invalid Input"
     valid = false
