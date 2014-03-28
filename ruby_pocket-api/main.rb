@@ -5,6 +5,9 @@ include Socket::Constants
 class VoxelDisplay
 
   def initialize(debug=false)
+    @queueVoxelSet = Set.new()
+    @queueVoxelBlinkSet = Set.new()
+
     @voxelSet = Set.new()
     @voxelBlinkSet = Set.new()
 
@@ -15,31 +18,40 @@ class VoxelDisplay
     @socket.connect( sockaddr )
     puts "CONNECTED"
 
+    drawThread = Thread.new do 
+      while true
+        if ( Time.now.strftime("%L") > "500" )
+          res = (@voxelSet + @voxelBlinkSet).map {|e| e.join(" ")} ::join(", ")
+        else
+          res = @voxelSet.map {|e| e.join(" ")} ::join(", ")
+        end
+        if @debug
+          puts res
+        end
+        @socket.write(res+"\n")
+      end
+    end
   end
-
+  
   def set_voxel( x, y, z )
-    @voxelSet.add [x, y, z]
+    @queueVoxelSet.add [x, y, z]
   end
 
   def set_blink_voxel( x, y, z)
-    @voxelBlinkSet.add [x, y, z]
+    @queueVoxelBlinkSet.add [x, y, z]
   end
 
   def toggle_voxel( x, y, z )
-    @voxelSet = @voxelSet ^ Set.new([[x,y,z]])
+    @queueVoxelSet ^= Set.new([[x,y,z]])
   end
 
   def toggle_blink_voxel( x, y, z )
-    @voxelBlinkSet = @voxelBlinkSet ^ Set.new([[x,y,z]])
+    @queueVoxelBlinkSet ^= Set.new([[x,y,z]])
   end
 
   def clear_state(normal=true, blink=true)
-    if (normal)
-      @voxelSet = Set.new()
-    end
-    if (blink)
-      @voxelBlinkSet = Set.new()
-    end
+    @queueVoxelSet = Set.new()       if normal
+    @queueVoxelBlinkSet = Set.new()  if blink
   end
 
   def get_state
@@ -47,15 +59,8 @@ class VoxelDisplay
   end
 
   def flush
-    # puts for now, socket code for actual implementation
-    res = (@voxelSet.map {|e| e.join(" ")} ::join(", "))
-    resB = (@voxelBlinkSet.map {|e| e.join(" ")} ::join(", "))
-    if @debug
-      puts res
-      puts "b"+resB
-    end
-    @socket.write(res+"\n")
-    @socket.write("b"+resB+"\n")
+    @voxelSet = @queueVoxelSet
+    @voxelBlinkSet = @queueVoxelBlinkSet
   end
 
 end
