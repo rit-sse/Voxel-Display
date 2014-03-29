@@ -3,7 +3,7 @@
  * based on http://papervision3d.googlecode.com/svn/trunk/as3/trunk/src/org/papervision3d/objects/primitives/Cube.as
  */
 
-THREE.ToplessBox = function ( width, height, depth, widthSegments, heightSegments, depthSegments ) {
+THREE.PatchworkPlane = function ( axis, patches, width, height, widthSegments, heightSegments ) {
 
 	THREE.Geometry.call( this );
 
@@ -11,22 +11,27 @@ THREE.ToplessBox = function ( width, height, depth, widthSegments, heightSegment
 
 	this.width = width;
 	this.height = height;
-	this.depth = depth;
 
-	this.widthSegments = widthSegments || 1;
-	this.heightSegments = heightSegments || 1;
-	this.depthSegments = depthSegments || 1;
+	this.widthSegments = widthSegments || patches.length;
+	this.heightSegments = heightSegments || patches[0].length;
 
 	var width_half = this.width / 2;
 	var height_half = this.height / 2;
-	var depth_half = this.depth / 2;
 
-	buildPlane( 'z', 'y', - 1, - 1, this.depth, this.height, width_half, 0 ); // px
-	buildPlane( 'z', 'y',   1, - 1, this.depth, this.height, - width_half, 1 ); // nx
-	//buildPlane( 'x', 'z',   1,   1, this.width, this.depth, height_half, 2 ); // py
-	//buildPlane( 'x', 'z',   1, - 1, this.width, this.depth, - height_half, 3 ); // ny
-	buildPlane( 'x', 'y',   1, - 1, this.width, this.height, depth_half, 4 ); // pz
-	buildPlane( 'x', 'y', - 1, - 1, this.width, this.height, - depth_half, 5 ); // nz
+    switch (axis) {
+      case 'x':
+	   buildPlane( 'z', 'y', - 1, - 1, this.width, this.height, width_half, 0 ); // px
+	   buildPlane( 'z', 'y',   1, - 1, this.width, this.height, - width_half, 1 ); // nx
+        break;
+      case 'y':
+	   buildPlane( 'x', 'z',   1,   1, this.width, this.height, height_half, 2 ); // py
+	   buildPlane( 'x', 'z',   1, - 1, this.width, this.height, - height_half, 3 ); // ny
+        break;
+      default: //z
+	   buildPlane( 'x', 'y',   1, - 1, this.width, this.height, width_half, 4 ); // pz
+	   buildPlane( 'x', 'y', - 1, - 1, this.width, this.height, - width_half, 5 ); // nz
+      break;
+    }
 
 	function buildPlane( u, v, udir, vdir, width, height, depth, materialIndex ) {
 
@@ -38,19 +43,11 @@ THREE.ToplessBox = function ( width, height, depth, widthSegments, heightSegment
 		offset = scope.vertices.length;
 
 		if ( ( u === 'x' && v === 'y' ) || ( u === 'y' && v === 'x' ) ) {
-
 			w = 'z';
-
 		} else if ( ( u === 'x' && v === 'z' ) || ( u === 'z' && v === 'x' ) ) {
-
 			w = 'y';
-			gridY = scope.depthSegments;
-
 		} else if ( ( u === 'z' && v === 'y' ) || ( u === 'y' && v === 'z' ) ) {
-
 			w = 'x';
-			gridX = scope.depthSegments;
-
 		}
 
 		var gridX1 = gridX + 1,
@@ -79,33 +76,36 @@ THREE.ToplessBox = function ( width, height, depth, widthSegments, heightSegment
 		for ( iy = 0; iy < gridY; iy++ ) {
 
 			for ( ix = 0; ix < gridX; ix++ ) {
+              
+                if (patches[ix][iy] && (patches[ix][iy]>0)) {
+                  console.log("Making plane ("+(ix)+", "+(iy)+")");
+                  var a = ix + gridX1 * iy;
+                  var b = ix + gridX1 * ( iy + 1 );
+                  var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
+                  var d = ( ix + 1 ) + gridX1 * iy;
 
-				var a = ix + gridX1 * iy;
-				var b = ix + gridX1 * ( iy + 1 );
-				var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-				var d = ( ix + 1 ) + gridX1 * iy;
+                  var uva = new THREE.Vector2( ix / gridX, 1 - iy / gridY );
+                  var uvb = new THREE.Vector2( ix / gridX, 1 - ( iy + 1 ) / gridY );
+                  var uvc = new THREE.Vector2( ( ix + 1 ) / gridX, 1 - ( iy + 1 ) / gridY );
+                  var uvd = new THREE.Vector2( ( ix + 1 ) / gridX, 1 - iy / gridY );
 
-				var uva = new THREE.Vector2( ix / gridX, 1 - iy / gridY );
-				var uvb = new THREE.Vector2( ix / gridX, 1 - ( iy + 1 ) / gridY );
-				var uvc = new THREE.Vector2( ( ix + 1 ) / gridX, 1 - ( iy + 1 ) / gridY );
-				var uvd = new THREE.Vector2( ( ix + 1 ) / gridX, 1 - iy / gridY );
+                  var face = new THREE.Face3( a + offset, b + offset, d + offset );
+                  face.normal.copy( normal );
+                  face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone() );
+                  face.materialIndex = materialIndex;
 
-				var face = new THREE.Face3( a + offset, b + offset, d + offset );
-				face.normal.copy( normal );
-				face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone() );
-				face.materialIndex = materialIndex;
+                  scope.faces.push( face );
+                  scope.faceVertexUvs[ 0 ].push( [ uva, uvb, uvd ] );
 
-				scope.faces.push( face );
-				scope.faceVertexUvs[ 0 ].push( [ uva, uvb, uvd ] );
+                  face = new THREE.Face3( b + offset, c + offset, d + offset );
+                  face.normal.copy( normal );
+                  face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone() );
+                  face.materialIndex = materialIndex;
 
-				face = new THREE.Face3( b + offset, c + offset, d + offset );
-				face.normal.copy( normal );
-				face.vertexNormals.push( normal.clone(), normal.clone(), normal.clone() );
-				face.materialIndex = materialIndex;
+                  scope.faces.push( face );
+                  scope.faceVertexUvs[ 0 ].push( [ uvb.clone(), uvc, uvd.clone() ] );
 
-				scope.faces.push( face );
-				scope.faceVertexUvs[ 0 ].push( [ uvb.clone(), uvc, uvd.clone() ] );
-
+                }
 			}
 
 		}
@@ -117,4 +117,8 @@ THREE.ToplessBox = function ( width, height, depth, widthSegments, heightSegment
 
 };
 
-THREE.ToplessBox.prototype = Object.create( THREE.Geometry.prototype );
+THREE.PatchworkPlane = function(axis, patches, worldx, worldy) {
+
+};
+
+THREE.PatchworkPlane.prototype = Object.create( THREE.Geometry.prototype );
