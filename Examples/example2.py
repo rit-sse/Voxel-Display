@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../python_pocket-api/')
-from main import VoxelDisplay
+sys.path.append('../python/')
+from InstanceAPI import VoxelDisplay
 
 import time
 vd = VoxelDisplay(True)

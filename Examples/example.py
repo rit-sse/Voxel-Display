@@ -1,6 +1,6 @@
 import sys
-sys.path.append('../python-api/')
-from main import VoxelDisplay
+sys.path.append('../APIs/python/')
+from ExtendAPI import VoxelDisplay
 
 class MyDisplay(VoxelDisplay):
 

@@ -1,6 +1,6 @@
 # snake for voxel 
 import sys
-sys.path.append('../python_pocket-api/')
+sys.path.append('../APIs/python/')
 from main import VoxelDisplay
 import tkinter as Tkinter
 import random

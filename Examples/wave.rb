@@ -1,4 +1,4 @@
-require '../ruby_pocket-api/main'
+require '../APIs/ruby/main'
 
 vd = VoxelDisplay.new()
 
