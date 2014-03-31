@@ -4,7 +4,7 @@ import collection.mutable.HashMap
 import math._
 
 
-class Embedded extends PApplet {
+class MoxelDisplay extends PApplet with VoxelDisplay{
 
   var voxelSet = Set[Voxel]()
 

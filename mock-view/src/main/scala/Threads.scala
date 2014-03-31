@@ -4,7 +4,7 @@ import scala.io.Source;
 object Threads {
 
 
-  def init( moxel : Embedded )  = {
+  def init( moxel : VoxelDisplay )  = {
     val ssock =  new ServerSocket(8999)
 
     while( true ) {
