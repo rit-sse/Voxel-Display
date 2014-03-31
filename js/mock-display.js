@@ -32,12 +32,12 @@ Awaiting.prototype.handleByte = function(byte) {
 var XPlaneBuilder = function(mock){
   if (!(this instanceof XPlaneBuilder)) {return new XPlaneBuilder(mock);}
   this.row = 0;
-  this.col = 0;
+  this.plane = 0;
   this.zlevel = 0;
   this.xplanes = [];
-  for (var i=0;i<mock.width;i++) {
+  for (var i=0;i<(mock.depth+1);i++) {
     this.xplanes[i] = [];
-    for (var j=0;j<mock.depth+1;j++) {
+    for (var j=0;j<mock.width;j++) {
       this.xplanes[i][j] = [];
       for (var k=0;k<mock.height;k++) {
         this.xplanes[i][j][k] = 0;
@@ -59,17 +59,16 @@ XPlaneBuilder.prototype.handleByte = function(byte){
       return new Awaiting(this.mock);
     }
     default: {
-      this.xplanes[this.col][this.row][this.zlevel] = byte;
+      this.xplanes[this.plane][this.row][this.zlevel] = byte;
       this.zlevel += 1;
-      if (this.zlevel>this.mock.height) {
+      if (this.zlevel>=this.mock.height) {
         this.zlevel = 0;
         this.row += 1;
-        if (this.row>this.mock.depth+1) {
+        if (this.row>=this.mock.width) {
           this.row = 0;
-          this.col += 1;
-          if (this.col>this.mock.width) {
-            //FWAAAAT!??!!
-            console.log('Terrible, terrible parsing errors happened.');
+          this.plane += 1;
+          if (this.plane>=(this.mock.depth+1)) {
+            //We aught to be done now. If more bytes appear... let it error?
           }
         }
       }
@@ -81,10 +80,10 @@ XPlaneBuilder.prototype.handleByte = function(byte){
 var YPlaneBuilder = function(mock){
   if (!(this instanceof YPlaneBuilder)) {return new YPlaneBuilder(mock);}
   this.row = 0;
-  this.col = 0;
+  this.plane = 0;
   this.zlevel = 0;
   this.yplanes = [];
-  for (var i=0;i<mock.width+1;i++) {
+  for (var i=0;i<(mock.width+1);i++) {
     this.yplanes[i] = [];
     for (var j=0;j<mock.depth;j++) {
       this.yplanes[i][j] = [];
@@ -109,17 +108,16 @@ YPlaneBuilder.prototype.handleByte = function(byte){
       return new Awaiting(this.mock);
     }
     default: {
-      this.yplanes[this.col][this.row][this.zlevel] = byte;
+      this.yplanes[this.plane][this.row][this.zlevel] = byte;
       this.zlevel += 1;
-      if (this.zlevel>this.mock.height) {
+      if (this.zlevel>=this.mock.height) {
         this.zlevel = 0;
-        this.row += 1;
-        if (this.row>this.mock.depth) {
-          this.row = 0;
-          this.col += 1;
-          if (this.col>this.mock.width+1) {
-            //FWAAAAT!??!!
-            console.log('Terrible, terrible parsing errors happened.');
+        this.plane += 1;
+        if (this.plane>=(this.mock.width+1)) {
+          this.plane = 0;
+          this.row += 1;
+          if (this.row>=(this.mock.depth)) {
+            //We aught to be done now. If more bytes appear... let it error?
           }
         }
       }
@@ -135,8 +133,10 @@ var JSVoxels = function() {
   this.readbuffer = new Uint8Array(0);
   this.state = new Awaiting(this);
   this.scene = new THREE.Scene(); 
+  this.size = 200;
+  this.offset = new THREE.Vector3(-this.size/2,0,-this.size/2);
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
-  this.renderer = new THREE.WebGLRenderer({ antialias: true}); 
+  this.renderer = new THREE.WebGLRenderer({ antialias: true }); 
   this.renderer.shadowMapEnabled = true;
   this.renderer.shadowMapSoft = true;
   this.renderer.setSize( window.innerWidth, window.innerHeight );   
@@ -153,11 +153,10 @@ var JSVoxels = function() {
   directionalLight.castShadow = true;
   
   directionalLight.shadowDarkness = 0.5;
-  directionalLight.shadowCameraVisible = true;
   directionalLight.shadowMapWidth = 2048;
   directionalLight.shadowMapHeight = 2048;
   
-  var csize = 100;
+  var csize = 250;
   directionalLight.shadowCameraLeft = -csize;
   directionalLight.shadowCameraRight = csize;
   directionalLight.shadowCameraTop = csize;
@@ -170,24 +169,27 @@ var JSVoxels = function() {
   this.scene.add(new THREE.AmbientLight( 0x212223));
   
   //var geometry = new THREE.ToplessBox(1,1,1); 
-  this.planemat = new THREE.MeshPhongMaterial({color: 0xefefefef, side: THREE.DoubleSide, transparent: true, opacity: 0.95});
-  //var cube = new THREE.Mesh( geometry, material ); 
+  this.planemat = new THREE.MeshPhongMaterial({color: 0xefefef, side: THREE.DoubleSide, transparent: true, opacity: 0.95});
+  //var geometry = new THREE.PatchworkPlane([[0,1],[1,0]], 100, 100);
+  //var cube = new THREE.Mesh( geometry, this.planemat ); 
   //cube.castShadow = true;
   //cube.receiveShadow = true;
   //this.scene.add( cube ); 
   
-  var geometry2 = new THREE.CubeGeometry(100,1,100);
-  var material2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0xfefefe, specular: 0x001188, shininess: 5, shading: THREE.SmoothShading  });
+  var geometry2 = new THREE.CubeGeometry(1000,1,1000);
+  var material2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x193af0, specular: 0x001188, shininess: 5, shading: THREE.SmoothShading  });
   var cube2 = new THREE.Mesh( geometry2, material2 ); 
   cube2.position = new THREE.Vector3(0,-1,0);
   cube2.receiveShadow = true;
-  //this.scene.add( cube2 ); 
+  this.scene.add( cube2 ); 
   
   var material3 = new THREE.MeshBasicMaterial( {color: 0xeeeeff, shading: THREE.NoShading , side: THREE.BackSide});
   var skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 1000, 1000, 1000, 1, 1, 1, null, true ), material3 );
-  //this.scene.add( skyboxMesh );
+  this.scene.add( skyboxMesh );
 
-  this.camera.position.z = 5;
+  this.camera.position.z = 350;
+  this.camera.position.y = 350;
+  this.camera.far = 8000;
   this.scene.add(this.camera);
 
   window.addEventListener( 'resize', function() {
@@ -300,23 +302,38 @@ JSVoxels.prototype.toggleVoxel = function() {
 JSVoxels.prototype.pushXPlanes = function(planes) {
   if (this.xplanes) {
     this.scene.remove(this.xplanes);
-    this.xplanes.dispose();
   }
   
   var xplanes = new THREE.Geometry();
   for (var i=0;i<planes.length;i++) {
-    var xplane = new THREE.PatchworkPlane('x', planes[i], 100, 100);
-    console.log(xplane);
+    var xplane = new THREE.PatchworkPlane(planes[i], this.size, this.size);
     var mesh = new THREE.Mesh(xplane, this.planemat);
-    mesh.position.x = (i/(planes.length-1)) * 100;
+    mesh.rotation.y = -Math.PI/2;
+    mesh.position.x = (i/(planes.length-1)) * this.size;
     THREE.GeometryUtils.merge(xplanes, mesh);
   }
   
+  this.xplanes = new THREE.Mesh(xplanes, this.planemat);
+  this.xplanes.position = this.xplanes.position.add(this.offset);
   this.scene.add(this.xplanes);
 };
 
 JSVoxels.prototype.pushYPlanes = function(planes) {
-  //TODO: Render planes
+  if (this.yplanes) {
+    this.scene.remove(this.yplanes);
+  }
+  
+  var yplanes = new THREE.Geometry();
+  for (var i=0;i<planes.length;i++) {
+    var yplane = new THREE.PatchworkPlane(planes[i], this.size, this.size);
+    var mesh = new THREE.Mesh(yplane, this.planemat);
+    mesh.position.z = (i/(planes.length-1)) * this.size;
+    THREE.GeometryUtils.merge(yplanes, mesh);
+  }
+  
+  this.yplanes = new THREE.Mesh(yplanes, this.planemat);
+  this.yplanes.position = this.yplanes.position.add(this.offset);
+  this.scene.add(this.yplanes);
 };
 
 document.addEventListener('DOMContentLoaded', function() {
