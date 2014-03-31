@@ -135,7 +135,6 @@ var JSVoxels = function() {
   this.scene = new THREE.Scene(); 
   this.size = 200;
   this.offset = new THREE.Vector3(-this.size/2,0,-this.size/2);
-  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
   this.renderer = new THREE.WebGLRenderer({ antialias: true }); 
   this.renderer.shadowMapEnabled = true;
   this.renderer.shadowMapSoft = true;
@@ -168,13 +167,7 @@ var JSVoxels = function() {
   
   this.scene.add(new THREE.AmbientLight( 0x212223));
   
-  //var geometry = new THREE.ToplessBox(1,1,1); 
   this.planemat = new THREE.MeshPhongMaterial({color: 0xefefef, side: THREE.DoubleSide, transparent: true, opacity: 0.95});
-  //var geometry = new THREE.PatchworkPlane([[0,1],[1,0]], 100, 100);
-  //var cube = new THREE.Mesh( geometry, this.planemat ); 
-  //cube.castShadow = true;
-  //cube.receiveShadow = true;
-  //this.scene.add( cube ); 
   
   var geometry2 = new THREE.CubeGeometry(1000,1,1000);
   var material2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x193af0, specular: 0x001188, shininess: 5, shading: THREE.SmoothShading  });
@@ -182,15 +175,6 @@ var JSVoxels = function() {
   cube2.position = new THREE.Vector3(0,-1,0);
   cube2.receiveShadow = true;
   this.scene.add( cube2 ); 
-  
-  var material3 = new THREE.MeshBasicMaterial( {color: 0xeeeeff, shading: THREE.NoShading , side: THREE.BackSide});
-  var skyboxMesh = new THREE.Mesh( new THREE.CubeGeometry( 1000, 1000, 1000, 1, 1, 1, null, true ), material3 );
-  this.scene.add( skyboxMesh );
-
-  this.camera.position.z = 350;
-  this.camera.position.y = 350;
-  this.camera.far = 8000;
-  this.scene.add(this.camera);
 
   window.addEventListener( 'resize', function() {
     self.camera.aspect = window.innerWidth / window.innerHeight;
@@ -198,43 +182,6 @@ var JSVoxels = function() {
     self.renderer.setSize( window.innerWidth, window.innerHeight );
   }, false );
 
-  var ORIGIN = new THREE.Vector3( 0, 0, 0 );
-
-  /*
-    37-40 = left, up, right, down
-  */
-  var KEY_LEFT = 37;
-  var KEY_UP = 38;
-  var KEY_RIGHT = 39;
-  var KEY_DOWN = 40;
-
-  window.addEventListener("keydown", function(e) {
-    self.camera.lookAt(ORIGIN);
-    var vector = new THREE.Vector3( 0, 0, -1 );
-    vector.applyQuaternion( self.camera.quaternion );
-    var dist = self.camera.position.length();
-    vector = vector.multiplyScalar(dist*-1);
-
-    var key = e.keyCode;
-    var axis = new THREE.Vector3( 0, 0, 0 );
-    if (key===KEY_LEFT) {
-      axis = new THREE.Vector3( 0, -1, 0 );
-    }
-    if (key===KEY_RIGHT) {
-      axis = new THREE.Vector3( 0, 1, 0 );
-    }
-    if (key===KEY_UP) {
-      axis = new THREE.Vector3( 1, 0, 0 );
-    }
-    if (key===KEY_DOWN) {
-      axis = new THREE.Vector3( -1, 0, 0 );
-    }
-
-    var newpos = vector.applyAxisAngle(axis.normalize(), 0.01);
-    self.camera.position = newpos;
-    self.camera.lookAt(ORIGIN);
-  }, true);
-  
   this.width = 8;
   this.depth = 8;
   this.height = 8;
@@ -247,6 +194,18 @@ var JSVoxels = function() {
     self.count += 1;
     self.renderer.render(self.scene, self.camera); 
   }
+  
+  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
+  this.camera.position.z = 350;
+  this.camera.position.y = 350;
+  this.camera.far = 8000;
+  this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+  this.controls.minDistance = 200;
+  this.controls.maxDistance = 1000;
+  this.controls.target = new THREE.Vector3(0,50,0);
+  this.scene.add(this.camera);
+  
+  this.renderer.setClearColor(0xeeeeff);
   
   setInterval(function() {
     document.querySelector(".framecount").innerHTML = "<b>"+self.count+" FPS</b>";
