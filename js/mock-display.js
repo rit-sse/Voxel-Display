@@ -249,6 +249,21 @@ JSVoxels.prototype.write = function(bytes) {
   }
 };
 
+JSVoxels.prototype.runScript = function(evt) {
+  var file = evt.target.files[0];
+  
+  if (!file) 
+    return
+    
+  var reader = new FileReader();
+  reader.onload = function(f){
+    return function(e){
+      console.log(eval(e.target.result));
+    }(f);
+  };
+  reader.readAsText(file);
+};
+
 JSVoxels.prototype.toggleVoxel = function() {
   var x = Math.floor(document.querySelector(".x").value);
   var y = Math.floor(document.querySelector(".y").value);
@@ -297,4 +312,6 @@ JSVoxels.prototype.pushYPlanes = function(planes) {
 
 document.addEventListener('DOMContentLoaded', function() {
   MockDisplay = new JSVoxels();
+  document.getElementById('file').addEventListener('change', MockDisplay.runScript, false);
 });
+
