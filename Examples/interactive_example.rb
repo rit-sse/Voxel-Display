@@ -1,4 +1,4 @@
-require '../APIs/ruby/main'
+require '../APIs/ruby/InstanceAPI'
 require 'curses'
 include Curses
 
@@ -19,6 +19,7 @@ addstr "Press q to quit\n"
 addstr "Enter coordinates \n| x y z\n| "
 
 ui = ""
+cVoxel = nil
 valid = false
 
 while (/q/ =~ ui) == nil
@@ -38,18 +39,23 @@ while (/q/ =~ ui) == nil
   if (ui.empty?)
     attrset(color_pair(COLOR_WHITE))
     addstr "\r| #{ui}#{" "*(20-ui.size)}:Enter Coords "
+    if valid
+      vd.toggle_voxel(*cVoxel)
+    end
     valid = false
-    vd.clear_state(false, true)
   elsif ((/^([0-7]\s){2}[0-7]$/ =~ ui) == nil)
     attrset(color_pair(COLOR_RED))
     addstr "\r| #{ui}#{" "*(20-ui.size)}:Invalid Input"
+    if valid
+      vd.toggle_voxel(*cVoxel)
+    end
     valid = false
-    vd.clear_state(false, true)
   else
     attrset(color_pair(COLOR_GREEN))
     addstr "\r| #{ui}#{" "*(20-ui.size)}:Valid Input  "
     valid = true
-    vd.set_blink_voxel(*ui.split)
+    vd.toggle_voxel(*ui.split)
+    cVoxel = ui.split
   end
   vd.flush
 end
