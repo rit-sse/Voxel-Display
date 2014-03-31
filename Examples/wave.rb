@@ -1,4 +1,4 @@
-require '../APIs/ruby/main'
+require '../APIs/ruby/InstanceAPI'
 
 vd = VoxelDisplay.new()
 

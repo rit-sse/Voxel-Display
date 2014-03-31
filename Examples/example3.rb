@@ -1,4 +1,4 @@
-require '../APIs/ruby/main'
+require '../APIs/ruby/InstanceAPI'
 
 vd = VoxelDisplay.new()
 
@@ -11,6 +11,4 @@ while true
   end
   vd.clear_state
   vd.flush
-  print("... ")
-  gets
 end
