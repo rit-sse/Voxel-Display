@@ -33,8 +33,7 @@ class Embedded extends PApplet {
     //noLoop();
   }
 
-  def voxel(x: Float, y: Float, z: Float, s: Float, a: Float) = {
-    fill(155, 155, 155, a)
+  def voxel(x: Float, y: Float, z: Float, s: Float) = {
     // FRONT
     beginShape()
     vertex(x,   y,   z)
@@ -82,6 +81,16 @@ class Embedded extends PApplet {
 
   override def draw() = {
     background(255, 255, 255)
+    stroke(0, 0, 0, 0)      // no edges
+    fill(55, 155, 55)
+    for( x <- List(-1, 8) ) {
+      for( y <- List(-1, 8) ) {
+        for( z <- List(-1, 8) ) {
+          voxel(x*vSize, y*vSize, z*vSize, vSize)
+        }
+      }
+    }
+
     if (mousePressed) {
       val cXZ = cameraXZ()
       camera(cXZ._1, mouseY-200, cXZ._2, cx, cy, cz, 0, 1, 0)
@@ -89,9 +98,10 @@ class Embedded extends PApplet {
 
     //Draw Voxels
     stroke(0, 0, 0, 0)      // no edges
+    fill(155, 155, 155, 155)
 
     voxelSet map { v => 
-      voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize, 155)
+      voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize)
     }
   }
 
