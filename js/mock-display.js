@@ -273,25 +273,6 @@ JSVoxels.prototype.toggleVoxel = function() {
   this.vd.flush();
 };
 
-JSVoxels.prototype.pushXPlanes = function(planes) {
-  if (this.xplanes) {
-    this.scene.remove(this.xplanes);
-  }
-  
-  var xplanes = new THREE.Geometry();
-  for (var i=0;i<planes.length;i++) {
-    var xplane = new THREE.PatchworkPlane(planes[i], this.size, this.size);
-    var mesh = new THREE.Mesh(xplane, this.planemat);
-    mesh.rotation.y = -Math.PI/2;
-    mesh.position.x = (i/(planes.length-1)) * this.size;
-    THREE.GeometryUtils.merge(xplanes, mesh);
-  }
-  
-  this.xplanes = new THREE.Mesh(xplanes, this.planemat);
-  this.xplanes.position = this.xplanes.position.add(this.offset);
-  this.scene.add(this.xplanes);
-};
-
 JSVoxels.prototype.pushYPlanes = function(planes) {
   if (this.yplanes) {
     this.scene.remove(this.yplanes);
@@ -301,13 +282,32 @@ JSVoxels.prototype.pushYPlanes = function(planes) {
   for (var i=0;i<planes.length;i++) {
     var yplane = new THREE.PatchworkPlane(planes[i], this.size, this.size);
     var mesh = new THREE.Mesh(yplane, this.planemat);
-    mesh.position.z = (i/(planes.length-1)) * this.size;
+    mesh.rotation.y = -Math.PI/2;
+    mesh.position.x = (i/(planes.length-1)) * this.size;
     THREE.GeometryUtils.merge(yplanes, mesh);
   }
   
   this.yplanes = new THREE.Mesh(yplanes, this.planemat);
   this.yplanes.position = this.yplanes.position.add(this.offset);
   this.scene.add(this.yplanes);
+};
+
+JSVoxels.prototype.pushXPlanes = function(planes) {
+  if (this.xplanes) {
+    this.scene.remove(this.xplanes);
+  }
+  
+  var xplanes = new THREE.Geometry();
+  for (var i=0;i<planes.length;i++) {
+    var xplane = new THREE.PatchworkPlane(planes[i], this.size, this.size);
+    var mesh = new THREE.Mesh(xplane, this.planemat);
+    mesh.position.z = (i/(planes.length-1)) * this.size;
+    THREE.GeometryUtils.merge(xplanes, mesh);
+  }
+  
+  this.xplanes = new THREE.Mesh(xplanes, this.planemat);
+  this.xplanes.position = this.xplanes.position.add(this.offset);
+  this.scene.add(this.xplanes);
 };
 
 document.addEventListener('DOMContentLoaded', function() {
