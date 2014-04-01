@@ -15,8 +15,8 @@ object Main{
 
     app.redraw()
 
-
-    Threads.init( app )
+    val hvd = new HardVoxelDisplay()
+    Threads.init( Set(app, hvd) )
   }
 
 }
