@@ -2,6 +2,7 @@ import processing.core._
 import javax.swing.JFrame
 import collection.mutable.HashMap
 import math._
+import language.postfixOps
 
 
 class MoxelDisplay extends PApplet with VoxelDisplay{
