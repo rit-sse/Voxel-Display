@@ -11,21 +11,28 @@
     canvas { 
       width: 100%; 
       height: 100%;
+      margin: 0;
+      padding: 0;
       position: fixed;
+    }
+    .field {
+      width: 5%;
+      min-width: 2em;
     }
     </style>
   </head>
   <body>
-    <div class="header" style="position: absolute; z-index: 100; left: 0; top: 0;">
+    <div class="header" style="position: absolute; z-index: 100; left: 0; top: 0; margin: 0; padding: 0;">
       <div class="framecount" style="display: inline;"><b>~ FPS</b></div>
       
       <label for="x">X</label>
-      <input id="x" class="x" type="number"></input>
+      <input id="x" class="x field" type="number"></input>
       <label for="y">Y</label>
-      <input id="y" class="y" type="number"></input>
+      <input id="y" class="y field" type="number"></input>
       <label for="z">Z</label>
-      <input id="z" class="z" type="number"></input>
+      <input id="z" class="z field" type="number"></input>
       <button onclick="MockDisplay.toggleVoxel()">Toggle</button>
+      <input id="shadows" type="checkbox">Shadows?</input>
       <input type="file" id="file" name="file"></input>
     </div>
   </body>

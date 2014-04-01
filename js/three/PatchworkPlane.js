@@ -6,6 +6,7 @@ THREE.PatchworkPlane = function(patches, worldx, worldy) {
   var height_segments = patches[0].length;
   
   var normal = new THREE.Vector3(0,0,1);
+  var inv = new THREE.Vector3(0,0,-1);
   var color = new THREE.Color( 0xfefefe );
   
   var uva = new THREE.Vector2(0,0);
@@ -40,6 +41,16 @@ THREE.PatchworkPlane = function(patches, worldx, worldy) {
         var face2 = new THREE.Face3(count+2, count+1, count+3, normal.clone(), color, 1);
         face2.vertexNormals.push( normal.clone(), normal.clone(), normal.clone() );
         this.faces.push( face2 );
+        this.faceVertexUvs[ 0 ].push( [ uvb.clone(), uvc.clone(), uvd.clone() ] );
+        
+        var face3 = new THREE.Face3(count+3, count+1, count+2, inv.clone(), color, 2);
+        face3.vertexNormals.push( inv.clone(),inv.clone(), inv.clone() );
+        this.faces.push( face3 );
+        this.faceVertexUvs[ 0 ].push( [ uva.clone(), uvb.clone(), uvd.clone() ] );
+
+        var face4 = new THREE.Face3(count+2, count+1, count, inv.clone(), color, 3);
+        face4.vertexNormals.push( inv.clone(), inv.clone(), inv.clone() );
+        this.faces.push( face4 );
         this.faceVertexUvs[ 0 ].push( [ uvb.clone(), uvc.clone(), uvd.clone() ] );
       }
     }

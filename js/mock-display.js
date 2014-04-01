@@ -167,7 +167,7 @@ var JSVoxels = function() {
   
   this.scene.add(new THREE.AmbientLight( 0x212223));
   
-  this.planemat = new THREE.MeshPhongMaterial({color: 0xefefef, side: THREE.DoubleSide, transparent: true, opacity: 0.95});
+  this.planemat = new THREE.MeshPhongMaterial({color: 0xefefef, transparent: true, opacity: 0.95});
   
   var geometry2 = new THREE.CubeGeometry(1000,1,1000);
   var material2 = new THREE.MeshPhongMaterial( { ambient: 0x030303, color: 0x193af0, specular: 0x001188, shininess: 5, shading: THREE.SmoothShading  });
@@ -253,7 +253,7 @@ JSVoxels.prototype.runScript = function(evt) {
   var file = evt.target.files[0];
   
   if (!file) 
-    return
+    return;
     
   var reader = new FileReader();
   reader.onload = function(f){
@@ -274,8 +274,10 @@ JSVoxels.prototype.toggleVoxel = function() {
 };
 
 JSVoxels.prototype.pushYPlanes = function(planes) {
+  var shadows;
   if (this.yplanes) {
     this.scene.remove(this.yplanes);
+    shadows = this.yplanes.castShadow;
   }
   
   var yplanes = new THREE.Geometry();
@@ -289,12 +291,15 @@ JSVoxels.prototype.pushYPlanes = function(planes) {
   
   this.yplanes = new THREE.Mesh(yplanes, this.planemat);
   this.yplanes.position = this.yplanes.position.add(this.offset);
+  this.yplanes.castShadow = shadows;
   this.scene.add(this.yplanes);
 };
 
 JSVoxels.prototype.pushXPlanes = function(planes) {
+  var shadows;
   if (this.xplanes) {
     this.scene.remove(this.xplanes);
+    shadows = this.xplanes.castShadow;
   }
   
   var xplanes = new THREE.Geometry();
@@ -307,11 +312,31 @@ JSVoxels.prototype.pushXPlanes = function(planes) {
   
   this.xplanes = new THREE.Mesh(xplanes, this.planemat);
   this.xplanes.position = this.xplanes.position.add(this.offset);
+  this.xplanes.castShadow = shadows;
   this.scene.add(this.xplanes);
+};
+
+JSVoxels.prototype.setDisplay = function(disp){
+  this.vd = disp;
+  this.width = this.vd.width; //make sure our dimensions match
+  this.depth = this.vd.depth;
+  this.height = this.vd.height;
+  this.pushXPlanes([]); //Clear display
+  this.pushYPlanes([]);
+  this.readbuffer = new Uint8Array(0); //Clear the reading buffer
+  this.state = new Awaiting(this); //Reset the reading state
+};
+
+JSVoxels.prototype.toggleShadows = function(evt) {
+  if (MockDisplay.xplanes && MockDisplay.yplanes) {
+    MockDisplay.xplanes.castShadow = !MockDisplay.xplanes.castShadow;
+    MockDisplay.yplanes.castShadow = !MockDisplay.yplanes.castShadow;
+  }
 };
 
 document.addEventListener('DOMContentLoaded', function() {
   MockDisplay = new JSVoxels();
   document.getElementById('file').addEventListener('change', MockDisplay.runScript, false);
+  document.getElementById('shadows').addEventListener('change', MockDisplay.toggleShadows, false);
 });
 

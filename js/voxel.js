@@ -94,6 +94,7 @@ VoxelDisplay.prototype.setVoxel = function(x,y,z,state) {
 
 VoxelDisplay.prototype.setDevice = function(subject) {
   this.subject = subject;
+  subject.setDisplay(this);
 };
 
 VoxelDisplay.prototype.flush = function(subject) {
