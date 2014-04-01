@@ -83,11 +83,16 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
   override def draw() = {
     background(255, 255, 255)
     stroke(0, 0, 0, 0)      // no edges
-    fill(55, 155, 55)
     for( x <- List(-1, 8) ) {
       for( y <- List(-1, 8) ) {
         for( z <- List(-1, 8) ) {
-          voxel(x*vSize, y*vSize, z*vSize, vSize)
+          if (x == -1 && y == -1 && z == -1) {
+            fill(55, 55, 155, 155)
+          }
+          else {
+            fill(55, 155, 55, 155)
+          }
+          voxel(x*vSize, (7-z)*vSize, (7-y)*vSize, vSize)
         }
       }
     }
@@ -102,7 +107,7 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
     fill(155, 155, 155, 155)
 
     voxelSet map { v => 
-      voxel(v.x*vSize, v.y*vSize, v.z*vSize, vSize)
+      voxel((v.x)*vSize, (7-v.z)*vSize, (7-v.y)*vSize, vSize)
     }
   }
 
