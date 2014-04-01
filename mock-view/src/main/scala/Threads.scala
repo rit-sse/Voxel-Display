@@ -18,7 +18,7 @@ object Threads {
 
       for( l <- istream.getLines ) {
           parseLine(l) match {
-              case Some(s) => updateDisplays( displays, s )
+              case Some(s) => displays.foreach { d => d.setVoxels(s) }
               case None =>  Unit
           }
       }
@@ -30,11 +30,6 @@ object Threads {
   }
 
 
-  def updateDisplays( displays : Set[VoxelDisplay], voxels : Set[Voxel] ) {
-    for( disp <- displays ) {
-      disp.setVoxels( voxels )
-    }
-  }
 
   def parseLine( line : String ) : Option[Set[Voxel]] = {
     if (line.size == 0) {
