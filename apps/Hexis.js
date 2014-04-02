@@ -12,7 +12,7 @@ maxx = 8; maxy = 8; maxz = 8;
 var vd = new VoxelDisplay(maxx, maxy, maxz, MockDisplay); //Get me a new display driver to use
 
 var heximos = {
-  "bar": [[1,0,0,0,0,0],
+  /*"bar": [[1,0,0,0,0,0],
           [1,0,0,0,0,0],
           [1,0,0,0,0,0],
           [1,0,0,0,0,0],
@@ -30,78 +30,54 @@ var heximos = {
             [0,0,0,0,0,0],
             [1,1,1,0,0,0],
             [1,1,1,0,0,0]],
-  "stair": [[0,0,0,0,0,0],
-            [0,0,0,0,0,0],
-            [0,0,0,0,0,0],
-            [1,0,0,0,0,0],
-            [1,1,0,0,0,0],
-            [1,1,1,0,0,0]],
-  "l": [[0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [1,0,0,0,0,0],
-        [1,1,1,1,1,0]],
-  "i": [[0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [0,0,0,0,0,0],
-        [0,0,0,0,0,1],
-        [0,1,1,1,1,1]],
   "-/": [[0,0,0,0,0,0],
          [0,0,0,0,0,0],
          [0,0,0,0,0,1],
          [0,0,0,0,0,1],
          [0,0,0,0,0,1],
-         [0,0,0,1,1,1]],
-  "zag": [[0,0,0,0,0,0],
+         [0,0,0,1,1,1]]*/
+  "block": [[0,0,0,0,0,0],
           [0,0,0,0,0,0],
           [0,0,0,0,0,0],
           [0,0,0,0,0,0],
-          [0,1,1,1,0,0],
+          [1,1,0,0,0,0],
+          [1,1,0,0,0,0]],
+  "bar": [[0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [1,0,0,0,0,0],
+          [1,0,0,0,0,0],
+          [1,0,0,0,0,0],
+          [1,0,0,0,0,0]],
+    "t": [[0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,1,0,0,0,0],
           [1,1,1,0,0,0]],
-  "super zag": [[0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,1,1,1,0],
-                [1,1,1,0,0,0]],
-  "zig": [[0,0,0,0,0,0],
+  "ll": [[0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [1,0,0,0,0,0],
+          [1,0,0,0,0,0],
+          [1,1,0,0,0,0]],
+"rl": [[0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,1,0,0,0,0],
+          [0,1,0,0,0,0],
+          [1,1,0,0,0,0]],
+"lz": [[0,0,0,0,0,0],
           [0,0,0,0,0,0],
           [0,0,0,0,0,0],
           [0,0,0,0,0,0],
-          [1,1,1,0,0,0],
-          [0,1,1,1,0,0]],
-  "super zig": [[0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [1,1,1,0,0,0],
-                [0,0,1,1,1,0]],
-  "hook": [[0,0,0,0,0,0],
-           [0,0,0,0,0,0],
-           [0,0,0,0,0,0],
-           [1,1,1,0,0,0],
-           [1,0,1,0,0,0],
-           [1,0,0,0,0,0]],
-  "reverse hook": [[0,0,0,0,0,0],
-                   [0,0,0,0,0,0],
-                   [0,0,0,0,0,0],
-                   [1,1,1,0,0,0],
-                   [1,0,1,0,0,0],
-                   [0,0,1,0,0,0]],
-  "left fist": [[0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [0,0,0,0,0,0],
-                [1,1,0,0,0,0],
-                [1,1,1,1,0,0]],
-  "right fist": [[0,0,0,0,0,0],
-                 [0,0,0,0,0,0],
-                 [0,0,0,0,0,0],
-                 [0,0,0,0,0,0],
-                 [0,0,0,0,1,1],
-                 [0,0,1,1,1,1]]
+          [1,1,0,0,0,0],
+          [0,1,1,0,0,0]],
+"rz": [[0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,0,0,0,0,0],
+          [0,1,1,0,0,0],
+          [1,1,0,0,0,0]]
 };
 
 function random_pair(obj) {
@@ -133,6 +109,9 @@ Voxel.prototype.getState = function() {
 Voxel.prototype.add = function(vobj){
   return new Voxel(this.x+vobj.x, this.y+vobj.y, this.z+vobj.z);
 };
+Voxel.prototype.sub = function(vobj){
+  return new Voxel(this.x-vobj.x, this.y-vobj.y, this.z-vobj.z);
+};
 Voxel.prototype.equals = function(vobj) {
   return ((vobj.x === this.x) && (vobj.y === this.y) && (vobj.z === this.z));
 };
@@ -147,7 +126,6 @@ var VoxelCluster = function(list) {
   this.visibile = true;
   if (list) {
     for (var i=0; i<list.length; i++) {
-      list[i].setState(true);
       this.add(list[i]);
     }
   }
@@ -289,6 +267,55 @@ Heximo.prototype.drop = function() {
   this.voxels.move(0,1,0);
   return true;
 }; 
+Heximo.prototype.rotateLeft = function() {
+  var bounds = this.voxels.bounds;
+  
+  var rotated = [];
+  for (var i=0; i<this.voxels.voxels.length; i++) {
+    var local = this.voxels.voxels[i].sub(bounds.min);
+    //2D rotations!
+    //x = x cos t - y sin t - so x = -y
+    //y = x sin t + y cos t = so y = x
+    var rot = new Voxel(-local.z, local.y, local.x);
+    rotated.push(rot.add(bounds.min));
+  }
+  
+  var newv = new VoxelCluster(rotated);
+  //Check if the new one is out of any x/z bounds
+  var offx = 0;
+  if (newv.bounds.min.x<0) {
+    offx = newv.bounds.min.x*-1;
+  } else if (newv.bounds.max.x>DISPLAY_MAX.x) {
+    offx = (newv.bounds.max.x-DISPLAY_MAX.x)*-1;
+  }
+  
+  var offz = 0;
+  if (newv.bounds.min.z<0) {
+    offz = newv.bounds.min.z*-1;
+  } else if (newv.bounds.max.z>DISPLAY_MAX.z) {
+    offz = (newv.bounds.max.z-DISPLAY_MAX.z)*-1;
+  }
+  
+  this.voxels.setVisibility(false);
+  //Check if any planned coords are in use
+  for (var j=0; j<newv.voxels.length; j++) {
+    var v = newv.voxels[j];
+    newv.voxels[j] = new Voxel(v.x+offx, v.y, v.z+offz);
+    if (newv.voxels[j].getState()) {
+      this.voxels.setVisibility(true);
+      return;
+    }
+  }
+  
+  this.voxels.setVisibility(false);
+  this.voxels = newv;
+  this.voxels.setVisibility(true);
+};
+Heximo.prototype.rotateRight = function() {
+  this.rotateLeft(); //I am this lazy.
+  this.rotateLeft();
+  this.rotateLeft();
+};
 
 var Heximos = {};
 
@@ -300,6 +327,8 @@ Heximos.Base.prototype.up = function() {return this;};
 Heximos.Base.prototype.down = function() {return this;};
 Heximos.Base.prototype.left = function() {return this;};
 Heximos.Base.prototype.right = function() {return this;};
+Heximos.Base.prototype.rotateleft = function() {return this;};
+Heximos.Base.prototype.rotateright = function() {return this;};
 Heximos.Base.prototype.confirm = function() {return this;};
 Heximos.Base.prototype.advance = function() {return this;};
 
@@ -321,6 +350,39 @@ Heximos.PieceSpawn = function(gs){
   this.count = 0;
   this.max = 60;
   
+  //Check if we cleared a layer
+  for (var y=0; y<=DISPLAY_MAX.y; y++) {
+    var count = 0;
+    for (var x=0; x<=DISPLAY_MAX.x; x++) {
+      for (var z=0; z<=DISPLAY_MAX.z; z++) {
+        if (Voxel(x,y,z).getState()) {
+          count++;
+        }
+      }
+    }
+    if (count===((DISPLAY_MAX.x+1)*(DISPLAY_MAX.z+1))) {
+      //A layer was completed!
+      for (var x=0; x<=DISPLAY_MAX.x; x++) {
+        for (var z=0; z<=DISPLAY_MAX.z; z++) {
+          Voxel(x,y,z).setState(false);
+        }
+      }
+      
+      var cluster = new VoxelCluster();
+      for (var ny=0;ny<y;ny++) {
+        for (var x=0; x<=DISPLAY_MAX.x; x++) {
+          for (var z=0; z<=DISPLAY_MAX.z; z++) {
+            var v=Voxel(x,ny,z);
+            if (v.getState()) {
+              cluster.add(v);
+            }
+          }
+        }
+      }
+      cluster.move(0,1,0, true);
+    }
+  }
+  
   var choice = random_pair(heximos);
   this.heximo = new Heximo(choice.v);
 };
@@ -328,7 +390,7 @@ Heximos.PieceSpawn.prototype = Object.create( Heximos.Base.prototype );
 Heximos.PieceSpawn.prototype.fallToBack = function() {
   while (this.heximo.drop()) {
     vd.flush();
-  };
+  }
 };
 Heximos.PieceSpawn.prototype.up = function() {
   this.heximo.nudgeUp();
@@ -346,6 +408,14 @@ Heximos.PieceSpawn.prototype.right = function() {
   this.heximo.nudgeRight();
   return this.advance();
 };
+Heximos.PieceSpawn.prototype.rotateleft = function() {
+  this.heximo.rotateLeft();
+  return this.advance();
+};
+Heximos.PieceSpawn.prototype.rotateright = function() {
+  this.heximo.rotateRight();
+  return this.advance();
+};
 Heximos.PieceSpawn.prototype.confirm = function() {
   this.fallToBack();
   return new Heximos.PieceSpawn(this.gs);
@@ -360,7 +430,7 @@ Heximos.PieceSpawn.prototype.advance = function() {
       console.log("Lost!");
       return new Heximos.Start(this.gs);
     }
-  };
+  }
   return this;
 };
 
@@ -382,7 +452,7 @@ Heximos.Falling.prototype.advance = function() {
     } else {
       return new Heximos.PieceSpawn(this.gs);
     }
-  };
+  }
   return this;
 };
 
@@ -414,6 +484,8 @@ var KEY_W = 87;
 var KEY_A = 65;
 var KEY_S = 83;
 var KEY_D = 68;
+var KEY_Q = 81;
+var KEY_E = 69;
 window.addEventListener('keydown', function(evt) {
   var k = evt.keyCode;
 
@@ -430,8 +502,15 @@ window.addEventListener('keydown', function(evt) {
     case KEY_D:
       gs.state = gs.state.right();
       break;
+    case KEY_Q:
+      gs.state = gs.state.rotateleft();
+      break;
+    case KEY_E:
+      gs.state = gs.state.rotateright();
+      break;
     case KEY_SPACE:
       gs.state = gs.state.confirm();
+      evt.preventDefault();
       break;
     default:
   }

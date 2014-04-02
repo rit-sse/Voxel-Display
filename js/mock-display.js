@@ -292,6 +292,7 @@ JSVoxels.prototype.pushYPlanes = function(planes) {
   this.yplanes = new THREE.Mesh(yplanes, this.planemat);
   this.yplanes.position = this.yplanes.position.add(this.offset);
   this.yplanes.castShadow = shadows;
+  this.yplanes.receiveShadow = shadows;
   this.scene.add(this.yplanes);
 };
 
@@ -313,6 +314,7 @@ JSVoxels.prototype.pushXPlanes = function(planes) {
   this.xplanes = new THREE.Mesh(xplanes, this.planemat);
   this.xplanes.position = this.xplanes.position.add(this.offset);
   this.xplanes.castShadow = shadows;
+  this.xplanes.receiveShadow = shadows;
   this.scene.add(this.xplanes);
 };
 
@@ -331,6 +333,8 @@ JSVoxels.prototype.toggleShadows = function(evt) {
   if (MockDisplay.xplanes && MockDisplay.yplanes) {
     MockDisplay.xplanes.castShadow = !MockDisplay.xplanes.castShadow;
     MockDisplay.yplanes.castShadow = !MockDisplay.yplanes.castShadow;
+    MockDisplay.xplanes.receiveShadow = !MockDisplay.xplanes.receiveShadow;
+    MockDisplay.yplanes.receiveShadow = !MockDisplay.yplanes.receiveShadow;
   }
 };
 
