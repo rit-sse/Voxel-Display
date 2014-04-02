@@ -56,6 +56,8 @@ VoxelDisplay.prototype.toggleVoxel = function(x,y,z) {
       z >= this.height ||
       x < 0 || y < 0 || z < 0) { return; }
 
+  this.voxels[x][y][z] = !(this.voxels[x][y][z]);
+  
   var planes = [
     [2*x,2*y+1,z],
     [2*x+2,2*y+1,z],
@@ -82,11 +84,11 @@ VoxelDisplay.prototype.toggleVoxel = function(x,y,z) {
 
 VoxelDisplay.prototype.setVoxel = function(x,y,z,state) {
   if (state) {
-    if (!this.voxel[x][y][z]) {
+    if (!(this.voxels[x][y][z])) {
       this.toggleVoxel(x,y,z);
     }
   } else {
-    if (this.voxel[x][y][z]) {
+    if (this.voxels[x][y][z]) {
       this.toggleVoxel(x,y,z);
     }
   }
@@ -98,10 +100,10 @@ VoxelDisplay.prototype.setDevice = function(subject) {
 };
 
 VoxelDisplay.prototype.flush = function(subject) {
-  if (!subject) {
+  if (!(subject)) {
     subject = this.subject;
   }
-  if (!subject) {
+  if (!(subject)) {
     return; //No device to flush to
   }
 

@@ -148,7 +148,7 @@ var JSVoxels = function() {
   document.body.appendChild( this.renderer.domElement );
   
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 ); 
-  directionalLight.position.set( 150, 150, 100 ); 
+  directionalLight.position.set( -150, 150, -100 ); 
   directionalLight.castShadow = true;
   
   directionalLight.shadowDarkness = 0.5;
@@ -196,7 +196,7 @@ var JSVoxels = function() {
   }
   
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ); 
-  this.camera.position.z = 350;
+  this.camera.position.z = -350;
   this.camera.position.y = 350;
   this.camera.far = 8000;
   this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
