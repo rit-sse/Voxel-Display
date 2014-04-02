@@ -1,4 +1,4 @@
-These applications are designed to be used with the volumetric display javascript API. To use either in the browser, download them, and then visit [the web display.](http://rit-sse.github.io/Volumetric-Display/) Then, click browse, select the downloaded file, and adjust your camera as you see fit.
+These applications are designed to be used with the volumetric display javascript API. To use either in the browser, download them, and then visit [the web display.](http://rit-sse.github.io/Voxel-Display/) Then, click browse, select the downloaded file, and adjust your camera as you see fit.
 
 #outter.js
 Sets the display to display its edge voxels.

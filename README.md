@@ -7,7 +7,7 @@ RIT/SSE - Voxel Display Project
 
 Society of Software Engineers' project to build a 3D display using voxels in a real 3D space.
 
-Hi there? Are you here to try out our 3D Browser-based voxel simulator? [You can find it here.](http://rit-sse.github.io/Volumetric-Display/)
+Hi there? Are you here to try out our 3D Browser-based voxel simulator? [You can find it here.](http://rit-sse.github.io/Voxel-Display/)
 
 The browser simulator is pretty cool - you can use your mouse and arrow keys to navigate around the 3d view. 
 
