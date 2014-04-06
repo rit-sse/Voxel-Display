@@ -8,6 +8,8 @@ import language.postfixOps
 class MoxelDisplay extends PApplet with VoxelDisplay{
 
   var voxelSet = Set[Voxel]()
+  var frontSheets = Array.ofDim[Boolean](9, 8, 8)
+  var sideSheets = Array.ofDim[Boolean](9, 8, 8)
 
   val vEdge = 8     // max number of voxels in any one direction
   val vSize = 20    // size of voxels
@@ -24,6 +26,14 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
 
   def setVoxels( voxels : Set[Voxel] ) = {
     voxelSet = voxels
+    frontSheets = Array.ofDim[Boolean](9, 8, 8)
+    sideSheets = Array.ofDim[Boolean](9, 8, 8)     
+    for( v <- voxels ) {
+        frontSheets(v.y)(7-v.z)(v.x)  = !frontSheets(v.y)(7-v.z)(v.x)
+        frontSheets(v.y+1)(7-v.z)(v.x)  = !frontSheets(v.y+1)(7-v.z)(v.x)
+        sideSheets(v.x)(7-v.z)(7-v.y)   = !sideSheets(v.x)(7-v.z)(7-v.y)
+        sideSheets(v.x+1)(7-v.z)(7-v.y)   = !sideSheets(v.x+1)(7-v.z)(7-v.y)
+    }
   }
 
   override def setup() = {
@@ -32,40 +42,6 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
 
     // prevent thread from starving everything else
     //noLoop();
-  }
-
-  def voxel(x: Float, y: Float, z: Float, s: Float) = {
-    // FRONT
-    beginShape()
-    vertex(x,   y,   z)
-    vertex(x+s, y,   z)
-    vertex(x+s, y+s, z)
-    vertex(x,   y+s, z)
-    endShape(PConstants.CLOSE)
-
-    // BACK
-    beginShape()
-    vertex(x,   y,   z+s)
-    vertex(x+s, y,   z+s)
-    vertex(x+s, y+s, z+s)
-    vertex(x,   y+s, z+s)
-    endShape(PConstants.CLOSE)
-
-    // SIDE L
-    beginShape()
-    vertex(x,   y,   z)
-    vertex(x,   y,   z+s)
-    vertex(x,   y+s, z+s)
-    vertex(x,   y+s, z)
-    endShape(PConstants.CLOSE)
-
-    // SIDE R
-    beginShape()
-    vertex(x+s, y,   z)
-    vertex(x+s, y,   z+s)
-    vertex(x+s, y+s, z+s)
-    vertex(x+s, y+s, z)
-    endShape(PConstants.CLOSE)
   }
 
   // return an x-z position around the center, takes the mouse X position
@@ -106,9 +82,45 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
     stroke(0, 0, 0, 0)      // no edges
     fill(155, 155, 155, 155)
 
-    voxelSet map { v => 
-      voxel((v.x)*vSize, (7-v.z)*vSize, (7-v.y)*vSize, vSize)
+    val s = vSize
+    // FRONT SHEETS
+    for( (fsy, fy) <- frontSheets.view.zipWithIndex ) {
+        for( (fsz, fz) <- fsy.view.zipWithIndex ) {
+            for( (fsx, fx) <- fsz.view.zipWithIndex ) {
+              if (fsx) {
+                val x = fx*s
+                val z = (8-fy)*s     // Y and Z are flipped in our model
+                val y = fz*s         // Y and Z are flipped in our model
+                beginShape()
+                vertex(x,   y,   z)
+                vertex(x+s, y,   z)
+                vertex(x+s, y+s, z)
+                vertex(x,   y+s, z)
+                endShape(PConstants.CLOSE)
+              }
+           }
+        }
     }
+
+    // SIDE SHEETS
+    for( (fsx, fx) <- sideSheets.view.zipWithIndex ) {
+        for( (fsz, fz) <- fsx.view.zipWithIndex ) {
+            for( (fsy, fy) <- fsz.view.zipWithIndex ) {
+              if (fsy) {
+                val x = fx*s
+                val z = fy*s     // Y and Z are flipped in our model
+                val y = fz*s         // Y and Z are flipped in our model
+                beginShape()
+                vertex(x,   y,   z)
+                vertex(x,   y,   z+s)
+                vertex(x,   y+s, z+s)
+                vertex(x,   y+s, z)
+                endShape(PConstants.CLOSE)
+              }
+           }
+        }
+    }
+
   }
 
   override def mousePressed() = {
