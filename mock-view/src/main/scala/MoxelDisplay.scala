@@ -68,7 +68,9 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
           else {
             fill(55, 155, 55, 155)
           }
-          voxel(x*vSize, (7-z)*vSize, (7-y)*vSize, vSize)
+          translate(x*vSize, (7-z)*vSize, (7-y)*vSize);
+          box(vSize)
+          translate(-x*vSize, -(7-z)*vSize, -(7-y)*vSize);
         }
       }
     }
