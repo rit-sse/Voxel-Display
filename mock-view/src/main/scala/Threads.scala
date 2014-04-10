@@ -1,5 +1,6 @@
 import java.net._
 import scala.io.Source;
+import language.postfixOps
 
 object Threads {
 
