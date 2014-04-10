@@ -6,8 +6,8 @@
  */
 #include "vd_VoxelDisplay_c.h"
  
-int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize ) {
-    if( (display = malloc( sizeof( struct VoxelDisplay ) )) == NULL ) {
+int vd_genDisplay( VoxelDisplay *display, int xSize, int ySize, int zSize ) {
+    if( (display = malloc( sizeof( VoxelDisplay ) )) == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
     display->xSize = xSize;
@@ -56,11 +56,11 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
     return 0;
 }
 
-int vd_genDisplay8x8x8( struct VoxelDisplay *display ) {
+int vd_genDisplay8x8x8( VoxelDisplay *display ) {
     return vd_genDisplay( display, 8, 8, 8 );
 }
  
-int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet ) {
+int vd_setVoxelOn( VoxelDisplay *display, Vec3 toSet ) {
    if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -73,7 +73,7 @@ int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet ) {
     return 0;
  }
 
-int vd_voxelOff( struct VoxelDisplay *display, struct Vec3 toSet ) {
+int vd_voxelOff( VoxelDisplay *display, Vec3 toSet ) {
    if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -86,28 +86,28 @@ int vd_voxelOff( struct VoxelDisplay *display, struct Vec3 toSet ) {
     return 0;
 }
 
-int vd_toggleVoxel( struct VoxelDisplay *display, struct Vec3 toToggle ) {
+int vd_toggleVoxel( VoxelDisplay *dispay, Vec3 toToggle ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-    if( toToggle.x >= display->xSize || 
-        toToggle.y > display->ySize || 
-        toToggle.z > display->zSize ) {
+    if( toSet.x >= display->xSize || 
+        toSet.y > display->ySize || 
+        toSet.z > display->zSize ) {
         return VD_VOXEL_OUT_OF_RANGE;
     }
-    display->voxels[toToggle.z + toToggle.y * display->zSize / 8] ^= (1 << toToggle.x);
+    display->voxels[toSet.z + toSet.y * display->zSize / 8] ^= (1 << toSet.x);
     return 0;
 }
 
-int vd_clear( struct VoxelDisplay *display ) {
+int vd_clear( VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-    memset( display->voxels, 0, display->totSize );
+    memset( display->voxels, 0, display-totSize );
     return 0;
 }
 
-int vd_flush( struct VoxelDisplay *display ) {
+int vd_flush( VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -118,7 +118,7 @@ int vd_flush( struct VoxelDisplay *display ) {
     return 0;
 }
 
-int vd_getVoxels( struct VoxelDisplay *display, char *voxels ) {
+int vd_getVoxels( VoxelDisplay *display, char *voxels ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -127,7 +127,7 @@ int vd_getVoxels( struct VoxelDisplay *display, char *voxels ) {
     return 0;
 }
 
-int vd_setVoxels( struct VoxelDisplay *display, char *data ) {
+int vd_setVoxels( VoxelDisplay *display, char *data ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
