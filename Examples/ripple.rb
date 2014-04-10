@@ -29,7 +29,7 @@ while true
   rippMap = makeMap(ripp[0..3])
   rippMap.each_with_index do |line,x|
     line.each_with_index do |h,z|
-      8.downto(h) do |y|
+      7.downto(h) do |y|
         vd.set_voxel(x, y, z)
       end
     end
