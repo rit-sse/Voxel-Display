@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if linux
+#if __linux
 //linux specific includes
 #include <netdb.h>
 #include <netinet/in.h>
@@ -19,10 +19,10 @@
 #elif _WIN32
 //Windows-specific includes
 #include <windows.h>
-#include <winsock.h>
+#include <winsock2.h>
 #endif
 /* Useful structs */
-struct Vec3{
+struct Vec3 {
     int x;
     int y;
     int z;
@@ -40,14 +40,14 @@ struct VoxelDisplay {
     int ySize;
     int zSize;
     int totSize;
-#ifdef linux
-    int sockfd;
+#ifdef __linux
+    int socket;
     struct sockaddr_in serv_addr;
-    struct hostnet *server;
+    struct hostent *server;
 #elif _WIN32
-    WORD sockVersion;
-    WSADATA wsaData;
-    LPHOSTENT hostEntry;
+    LPHOSTENT *server;
+    SOCKET socket;
+    SOCKADDR_IN serv_addr;
 #endif
 };
 

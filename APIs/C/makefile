@@ -11,10 +11,10 @@ ifeq ($(shell uname -s), Linux)
 endif
 
 $(EXE): VoxelDisplay.o
-	echo '******** CREATE EXE ********'
+	@echo '******** CREATE EXE ********'
 	$(CC) $(COPTS) $(CLIBS) -o $(EXE) VoxelDisplay.o 
 
 VoxelDisplay.o: VoxelDisplay.c
-	echo '******** BEGIN COMPILATION ********'
+	@echo '******** BEGIN COMPILATION ********'
 	$(CC) $(COPTS) $(CLIBS) -c VoxelDisplay.c
 

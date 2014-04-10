@@ -5,9 +5,18 @@
  * the Society of Software Engineers' Voxel Display
  */
 #include "vd_VoxelDisplay_c.h"
- 
-int vd_genDisplay( VoxelDisplay *display, int xSize, int ySize, int zSize ) {
-    if( (display = malloc( sizeof( VoxelDisplay ) )) == NULL ) {
+
+void cleanup_linux( struct VoxelDisplay *display ) {
+    free( display );
+} 
+
+void cleanup_win32( struct VoxelDisplay *display ) {
+    WSACleanup();
+    free( display );
+}
+
+int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize ) {
+    if( (display = malloc( sizeof( struct VoxelDisplay ) )) == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
     display->xSize = xSize;
@@ -18,49 +27,72 @@ int vd_genDisplay( VoxelDisplay *display, int xSize, int ySize, int zSize ) {
         free( display );
         return VD_VOXELS_NOT_ALLOCATED;
     }
+    
 #ifdef linux
-    //Linux-specific networking
-    //Open the socket for data transmission
-    if( (display->sockfd = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ) {
-        free( display );
+    // Linux-specific networking
+    // taken from http://www.linuxhowtos.org/C_C++/socket.htm
+    void *cleanupFunc = cleanup_linux;
+
+#elif _WDIN32
+    void *cleanupFunc = cleanup_win32;
+    WSAStartup( MAKEWORD( 1, 1 ) );
+#endif
+
+    // This appears to be POSIX networking or something
+    // Open the socket for data transmission
+    if( (display->socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ) {
+        cleanupFunc( display );
         return VD_SOCKET_ERROR;
     }
 
-    //resolve the hostname - you could technically connect to a display
-    //running on a server far away somewhere
+    // resolve the hostname - you could technically connect to a display
+    // running on a server far away somewhere
     if( (display->server = gethostbyname( "localhost" )) == NULL ) {
         printf( "Localhost doesn't exist, you dun goofed.\n" );
-        free( display );
-        return VD_SOCKET_ERROR;
+        cleanupFunc( display );
+        return VD_NETWORK_ERROR;
     }
-    
-    //Copy the server properties into a place where they're more useful
-    bzero( (char*)&(display->serv_addr), sizeof( display->serv_addr ) );
+
+#ifdef linux    
+    // Copy the server properties into a place where they're more useful
+    bzero( (char*)&(display->serv_addr), sizeof( struct sockaddr_in ) );
     display->serv_addr.sin_family = AF_INET;
     bcopy( (char*)display->server->h_addr,
-           (char*)&(display->serv_addr.sin_addr.s_addr,
+           (char*)&(display->serv_addr.sin_addr.s_addr),
            display->server->h_length );
     display->serv_addr.sin_port = htons( 8999 );
     
-    //And now, ladies and gentlemen, the moment you've all been waiting for:
-    //Connection to the actual display!
-    if( connect( display->sockfd, 
+    // And now, ladies and gentlemen, the moment you've all been waiting for
+    // Connection to the actual display!
+    if( connect( display->socket,
                  &display->serv_addr, 
-                 sizeof( display->serv_addr ) ) < 0 ) {
+                 sizeof( struct sockaddr_in ) ) < 0 ) {
         free( display->server );
         free( display );
         return( VD_NO_CONNECTION );
     }
 #elif _WIN32
+    // Windows-specific networking
+    // taken from http://johnnie.jerrata.com/winsocktutorial/
+    // Fill a socket address structure with the things it needs
+    display->serv_addr.sin_family = AF_INET;
+    display->serv_addr.sin_port = htons( 8999 );
+    if( connect( display->socket,
+                 (LPSOCKADDR)&display->serv_addr,
+                 sizeof( struct sockaddr ) ) == SOCKET_ERROR ) {
+        WSACleanup();
+        free( display );
+        return VD_NO_CONNECTION;
+    }
 #endif
     return 0;
 }
 
-int vd_genDisplay8x8x8( VoxelDisplay *display ) {
+int vd_genDisplay8x8x8( struct VoxelDisplay *display ) {
     return vd_genDisplay( display, 8, 8, 8 );
 }
  
-int vd_setVoxelOn( VoxelDisplay *display, Vec3 toSet ) {
+int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet ) {
    if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -73,7 +105,7 @@ int vd_setVoxelOn( VoxelDisplay *display, Vec3 toSet ) {
     return 0;
  }
 
-int vd_voxelOff( VoxelDisplay *display, Vec3 toSet ) {
+int vd_voxelOff( struct VoxelDisplay *display, struct Vec3 toSet ) {
    if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -86,39 +118,40 @@ int vd_voxelOff( VoxelDisplay *display, Vec3 toSet ) {
     return 0;
 }
 
-int vd_toggleVoxel( VoxelDisplay *dispay, Vec3 toToggle ) {
+int vd_toggleVoxel( struct VoxelDisplay *display, struct Vec3 toToggle ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-    if( toSet.x >= display->xSize || 
-        toSet.y > display->ySize || 
-        toSet.z > display->zSize ) {
+    if( toToggle.x >= display->xSize || 
+        toToggle.y > display->ySize || 
+        toToggle.z > display->zSize ) {
         return VD_VOXEL_OUT_OF_RANGE;
     }
-    display->voxels[toSet.z + toSet.y * display->zSize / 8] ^= (1 << toSet.x);
+    display->voxels[toToggle.z + toToggle.y * display->zSize / 8] ^= (1 << toToggle.x);
     return 0;
 }
 
-int vd_clear( VoxelDisplay *display ) {
+int vd_clear( struct VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-    memset( display->voxels, 0, display-totSize );
+    memset( display->voxels, 0, display->totSize );
     return 0;
 }
 
-int vd_flush( VoxelDisplay *display ) {
+int vd_flush( struct VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
 #ifdef linux
-    write( display->sockfd, display->voxels, display->totSize );
+    write( display->socket, display->voxels, display->totSize );
 #elif _WIN32
+    send( display->socket, display->voxels, display->totSize, , 00 );
 #endif
     return 0;
 }
 
-int vd_getVoxels( VoxelDisplay *display, char *voxels ) {
+int vd_getVoxels( struct VoxelDisplay *display, char *voxels ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -127,7 +160,7 @@ int vd_getVoxels( VoxelDisplay *display, char *voxels ) {
     return 0;
 }
 
-int vd_setVoxels( VoxelDisplay *display, char *data ) {
+int vd_setVoxels( struct VoxelDisplay *display, char *data ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
