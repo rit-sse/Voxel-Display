@@ -57,32 +57,25 @@ class MoxelDisplay extends PApplet with VoxelDisplay{
   }
 
   override def draw() = {
-    background(255, 255, 255)
-    stroke(0, 0, 0, 0)      // no edges
-    for( x <- List(-1, 8) ) {
-      for( y <- List(-1, 8) ) {
-        for( z <- List(-1, 8) ) {
-          if (x == -1 && y == -1 && z == -1) {
-            fill(55, 55, 155, 155)
-          }
-          else {
-            fill(55, 155, 55, 155)
-          }
-          translate(x*vSize, (7-z)*vSize, (7-y)*vSize);
-          box(vSize)
-          translate(-x*vSize, -(7-z)*vSize, -(7-y)*vSize);
-        }
-      }
-    }
+    background(255, 255, 255);
+
+    fill(155, 155, 155, 0);     // no fill
+    stroke(155, 155, 155);
+    val diameter = 8*vSize
+    val radius = 4*vSize
+
+    translate(radius, diameter+10, radius)
+    box(diameter, 20, diameter);
+    translate(-radius, -(diameter+10), -radius)
 
     if (mousePressed) {
-      val cXZ = cameraXZ()
-      camera(cXZ._1, mouseY-200, cXZ._2, cx, cy, cz, 0, 1, 0)
+      val cXZ = cameraXZ();
+      camera(cXZ._1, mouseY-200, cXZ._2, cx, cy, cz, 0, 1, 0);
     }
 
     //Draw Voxels
-    stroke(0, 0, 0, 0)      // no edges
-    fill(155, 155, 155, 155)
+    stroke(0, 0, 0, 0);      // no edges
+    fill(155, 155, 155, 155);
 
     val s = vSize
     // FRONT SHEETS
