@@ -1,0 +1,16 @@
+var SerialPort = require("serialport").SerialPort;
+
+var serialPort = new SerialPort("COM5", {
+  baudrate: 9600
+}, false);
+
+serialPort.open(function () {
+  console.log('open');
+  serialPort.on('data', function(data) {
+    console.log('data received: ' + data);
+  });
+  serialPort.write("ls\n", function(err, results) {
+    console.log('err ' + err);
+    console.log('results ' + results);
+  });
+});

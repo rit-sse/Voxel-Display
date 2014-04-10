@@ -1,0 +1,18 @@
+{
+  "name": "node-voxeldisplay",
+  "version": "0.0.0",
+  "description": "Node bindings for the SSE Voxel Display serial connection.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "rit-sse",
+  "license": "-",
+  "dependencies": {
+    "serialport": "~1.3.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.18.2",
+    "chai": "~1.9.1"
+  }
+}
