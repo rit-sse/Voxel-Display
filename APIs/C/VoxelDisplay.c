@@ -19,39 +19,68 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
         return VD_VOXELS_NOT_ALLOCATED;
     }
 #ifdef linux
-    //Linux-specific networking
-    //Open the socket for data transmission
+    // Linux-specific networking
+    // taken from http://www.linuxhowtos.org/C_C++/socket.htm
+    // Open the socket for data transmission
     if( (display->sockfd = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ) {
         free( display );
         return VD_SOCKET_ERROR;
     }
 
-    //resolve the hostname - you could technically connect to a display
-    //running on a server far away somewhere
+    // resolve the hostname - you could technically connect to a display
+    // running on a server far away somewhere
     if( (display->server = gethostbyname( "localhost" )) == NULL ) {
         printf( "Localhost doesn't exist, you dun goofed.\n" );
         free( display );
         return VD_SOCKET_ERROR;
     }
     
-    //Copy the server properties into a place where they're more useful
-    bzero( (char*)&(display->serv_addr), sizeof( display->serv_addr ) );
+    // Copy the server properties into a place where they're more useful
+    bzero( (char*)&(display->serv_addr), sizeof( struct sockaddr_in ) );
     display->serv_addr.sin_family = AF_INET;
     bcopy( (char*)display->server->h_addr,
-           (char*)&(display->serv_addr.sin_addr.s_addr,
+           (char*)&(display->serv_addr.sin_addr.s_addr),
            display->server->h_length );
     display->serv_addr.sin_port = htons( 8999 );
     
-    //And now, ladies and gentlemen, the moment you've all been waiting for:
-    //Connection to the actual display!
+    // And now, ladies and gentlemen, the moment you've all been waiting for
+    // Connection to the actual display!
     if( connect( display->sockfd, 
                  &display->serv_addr, 
-                 sizeof( display->serv_addr ) ) < 0 ) {
+                 sizeof( struct sockaddr_in ) ) < 0 ) {
         free( display->server );
         free( display );
         return( VD_NO_CONNECTION );
     }
 #elif _WIN32
+    // Windows-specific networking
+    // taken from http://johnnie.jerrata.com/winsocktutorial/
+    // 3 functions, 3 different naming schemes. Wonderful.
+    WORD sockVersion = MAKEWORD( 1, 1 );
+    WSAStartup( sockVersion, &display->wsaData );
+    if( (display->hostEntry = gethostbyname( "localhost" )) == NULL ) {
+        WSACleanup();
+        free( display );
+        return VD_NETWORK_ERROR;
+    }
+
+    // create socket
+    if( (display->socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP )) == INVALID_SOCKET ) {
+        WSACleanup();
+        free( display );
+        return VD_SOCKET_ERROR;
+    }
+
+    // Fill a socket address structure with the things it needs
+    display->serv_addr.sin_family = AF_INET;
+    display->serv_addr.sin_port = htons( 8999 );
+    if( connect( display->socket,
+                 (LPSOCKADDR)&display->serv_addr,
+                 sizeof( struct sockaddr ) ) == SOCKET_ERROR ) {
+        WSACleanup();
+        free( display );
+        return VD_NO_CONNECTION;
+    }
 #endif
     return 0;
 }
@@ -114,6 +143,7 @@ int vd_flush( struct VoxelDisplay *display ) {
 #ifdef linux
     write( display->sockfd, display->voxels, display->totSize );
 #elif _WIN32
+    send( display->socket, display->voxels, display->totSize, , 00 );
 #endif
     return 0;
 }

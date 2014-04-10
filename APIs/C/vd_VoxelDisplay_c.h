@@ -7,6 +7,7 @@
 // C headers
 #include <stdlib.h>
 #include <string.h>
+
 #if linux
 //linux specific includes
 #include <netdb.h>
@@ -14,8 +15,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #elif _WIN32
-//Windows-specific things
+//Windows-specific includes
+#include <windows.h>
+#include <winsock.h>
 #endif
 /* Useful structs */
 struct Vec3{
@@ -41,6 +45,9 @@ struct VoxelDisplay {
     struct sockaddr_in serv_addr;
     struct hostnet *server;
 #elif _WIN32
+    WORD sockVersion;
+    WSADATA wsaData;
+    LPHOSTENT hostEntry;
 #endif
 };
 
@@ -50,6 +57,7 @@ struct VoxelDisplay {
 #define VD_VOXELS_NOT_ALLOCATED     -3
 #define VD_SOCKET_ERROR             -4
 #define VD_NO_CONNECTION            -5
+#define VD_NETWORK_ERROR            -6
 
 /*
  * \brief Creates a new VoxelDisplay with the specified size
