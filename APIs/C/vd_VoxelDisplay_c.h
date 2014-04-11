@@ -4,9 +4,12 @@
  * This file provides a number of funcitons which can be used to interface with
  * the Society of Software Engineers' Vec3Display
  */
+#ifndef VD_VOXEL_DISPLAY_C_H
+#define VD_VOXEL_DISPLAY_C_H
 // C headers
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #if __linux
 //linux specific includes
@@ -73,6 +76,9 @@ struct VoxelDisplay {
  *          allocated
  *         VD_VOXELS_NOT_ALLOCATED if memory for the Vec3array cannot be
  *          allocated
+ *         VD_SOCKET_ERROR if the socket could not be created
+ *         VD_NETWORK_ERROR if there was an error resolving the hostnamt
+ *         VD_NO_CONNECTION if your program couldn't connect to the server
  *         0 if all operations succeed
  */
 int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize );
@@ -114,7 +120,7 @@ int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet );
  *          display's bounds
  *         0 if the operation succeeds
  */
-int vd_voxelOff( struct VoxelDisplay *display, struct Vec3 toSet );
+int vd_setVoxelOff( struct VoxelDisplay *display, struct Vec3 toSet );
 
 /*
  * \brief Toggles the state of the specified Voxel
@@ -169,4 +175,5 @@ int vd_getVoxels( struct VoxelDisplay *display, char *voxels );
  *         0 if the operation succeeds
  */
 int vd_setVoxels( struct VoxelDisplay *display, char *data );
+#endif
 
