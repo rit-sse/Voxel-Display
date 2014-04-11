@@ -17,7 +17,7 @@ Awaiting.prototype = Object.create( State.prototype );
 
 Awaiting.prototype.handleByte = function(byte) {
   switch (byte) {
-    case 0x80: { //Prepare to recieve planes
+    case this.mock.vd.startByte: { //Prepare to recieve planes
       return new XPlaneBuilder(this.mock);
     }
     default: {
@@ -47,7 +47,7 @@ XPlaneBuilder.prototype = Object.create( State.prototype );
 
 XPlaneBuilder.prototype.handleByte = function(byte){
   switch (byte) {
-    case 0xff: {
+    case this.mock.vd.endByte: {
       this.mock.pushXPlanes(this.xplanes);
       return new Awaiting(this.mock);
     }
@@ -92,7 +92,7 @@ YPlaneBuilder.prototype = Object.create( State.prototype );
 
 YPlaneBuilder.prototype.handleByte = function(byte){
   switch (byte) {
-    case 0xff: {
+    case this.mock.vd.endByte: {
       //Push out
       this.mock.pushYPlanes(this.yplanes);
       return new Awaiting(this.mock);
@@ -248,7 +248,7 @@ JSVoxels.prototype.runScript = function(evt) {
   var reader = new FileReader();
   reader.onload = function(f){
     return function(e){
-      console.log(eval(e.target.result));
+      eval(e.target.result);
     }(f);
   };
   reader.readAsText(file);

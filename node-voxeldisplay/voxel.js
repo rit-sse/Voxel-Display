@@ -112,16 +112,16 @@
                              (this.yplanes.length*this.yplanes[0].length*this.yplanes[0][0].length)+3);
 
     var pos = 0;
-    buf[pos] = 0x80; //Indicate start
+    buf[pos] = this.startByte; //Indicate start
     pos++;
 
     for (var planecount=0;planecount<this.xplanes.length;planecount++) {
       for (var colcount=0;colcount<this.xplanes[planecount].length;colcount++) {
         for (var zindex=0;zindex<this.xplanes[planecount][colcount].length;zindex++) {
           if (this.xplanes && this.xplanes[planecount] && this.xplanes[planecount][colcount] && this.xplanes[planecount][colcount][zindex]) {
-            buf[pos] = 1; 
+            buf[pos] = this.highByte; 
           } else {
-            buf[pos] = 0;
+            buf[pos] = this.lowByte;
           }
           pos++;
         }
@@ -135,19 +135,24 @@
       for (var colcount=0;colcount<this.yplanes[planecount].length;colcount++) {
         for (var zindex=0;zindex<this.yplanes[planecount][colcount].length;zindex++) {
           if (this.yplanes && this.yplanes[planecount] && this.yplanes[planecount][colcount] && this.yplanes[planecount][colcount][zindex]) {
-            buf[pos] = 1;  
+            buf[pos] = this.highByte;  
           } else {
-            buf[pos] = 0; 
+            buf[pos] = this.lowByte; 
           }
           pos++;
         }
       }
     }
 
-    buf[pos] = 0xff; //indicate finish
+    buf[pos] = this.endByte; //indicate finish
 
     subject.write(buf);
   };
+  
+  VoxelDisplay.prototype.startByte = 0x80;
+  VoxelDisplay.prototype.endByte = 0xff;
+  VoxelDisplay.prototype.highByte = 1;
+  VoxelDisplay.prototype.lowByte = 0;
 
   if (typeof process === 'undefined' || !process.versions) {
     window.VoxelDisplay = VoxelDisplay;
