@@ -17,10 +17,7 @@ Awaiting.prototype = Object.create( State.prototype );
 
 Awaiting.prototype.handleByte = function(byte) {
   switch (byte) {
-    case 0x10: { //Prepare to recieve yplanes
-      return new YPlaneBuilder(this.mock);
-    }
-    case 0x9: { //Prepare to recieve xplanes
+    case 0x80: { //Prepare to recieve planes
       return new XPlaneBuilder(this.mock);
     }
     default: {
@@ -50,10 +47,6 @@ XPlaneBuilder.prototype = Object.create( State.prototype );
 
 XPlaneBuilder.prototype.handleByte = function(byte){
   switch (byte) {
-    case 0x10: {
-      this.mock.pushXPlanes(this.xplanes);
-      return new YPlaneBuilder(this.mock);
-    }
     case 0xff: {
       this.mock.pushXPlanes(this.xplanes);
       return new Awaiting(this.mock);
@@ -68,7 +61,8 @@ XPlaneBuilder.prototype.handleByte = function(byte){
           this.row = 0;
           this.plane += 1;
           if (this.plane>=(this.mock.depth+1)) {
-            //We aught to be done now. If more bytes appear... let it error?
+            this.mock.pushXPlanes(this.xplanes);
+            return new YPlaneBuilder(this.mock);
           }
         }
       }
@@ -98,10 +92,6 @@ YPlaneBuilder.prototype = Object.create( State.prototype );
 
 YPlaneBuilder.prototype.handleByte = function(byte){
   switch (byte) {
-    case 0x9: {
-      this.mock.pushYPlanes(this.yplanes);
-      return new XPlaneBuilder(this.mock);
-    }
     case 0xff: {
       //Push out
       this.mock.pushYPlanes(this.yplanes);
