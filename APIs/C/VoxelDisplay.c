@@ -20,10 +20,6 @@ void cleanup_win32( struct VoxelDisplay *display ) {
 #endif
 
 int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize ) {
-    printf( "Allocating display...\n" );
-    if( (display = malloc( sizeof( struct VoxelDisplay ) )) == NULL ) {
-        return VD_DISPLAY_NOT_ALLOCATED;
-    }
     display->xSize = xSize;
     display->ySize = ySize;
     display->zSize = zSize;

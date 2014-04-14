@@ -68,19 +68,19 @@ struct VoxelDisplay {
  * \brief Creates a new VoxelDisplay with the specified size
  *
  * \param [out] display A pointer to the memory to stick the created 
- *      VoxelDisplay in. It is recommended that this memory be not allocated,
- *      as anything at this location will be overwritten
+ *      VoxelDisplay in. This pointer MUST be allocated before this function
+ *      is called.
  * \param [in] xSize The desired number of voxels in the x-direction
  * \param[in] ySize The desired number of voxels in the y-direction
  * \param [in] zSize The desired number of voxels in the z-direction
  *
  * \return VD_DISPLAY_NOT_ALLOCATED if memory for the display cannot be 
  *          allocated
- *         VD_VOXELS_NOT_ALLOCATED if memory for the Vec3array cannot be
+ *      VD_VOXELS_NOT_ALLOCATED if memory for the Vec3array cannot be
  *          allocated
- *         VD_SOCKET_ERROR if the socket could not be created
- *         VD_NETWORK_ERROR if there was an error resolving the hostnamt
- *         VD_NO_CONNECTION if your program couldn't connect to the server
+ *      VD_SOCKET_ERROR if the socket could not be created
+ *      VD_NETWORK_ERROR if there was an error resolving the hostnamt
+ *      VD_NO_CONNECTION if your program couldn't connect to the server
  *         0 if all operations succeed
  */
 int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize );
@@ -90,13 +90,13 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
  *      directions
  *
  * \param [out] display A pointer to the memory to stick the created 
- *      VoxelDisplay in. It is recommended that this memory be not allocated,
- *      as anything at this location will be overwritten 
+ *      VoxelDisplay in. This pointer MUST be allocated before this function
+ *      is called
  * \return VD_DISPLAY_NOT_ALLOCATED if memory for the display cannot be 
- *          allocated
- *         VD_VOXELS_NOT_ALLOCATED if memory for the Vec3array cannot be
- *          allocated
- *         0 if all operations succeed 
+ *      allocated
+ *      VD_VOXELS_NOT_ALLOCATED if memory for the Vec3array cannot be
+ *      allocated
+ *      0 if all operations succeed 
  */
 int vd_genDisplay8x8x8( struct VoxelDisplay *display );
 
