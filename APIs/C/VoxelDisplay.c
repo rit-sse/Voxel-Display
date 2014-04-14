@@ -20,6 +20,7 @@ void cleanup_win32( struct VoxelDisplay *display ) {
 #endif
 
 int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize ) {
+    printf( "Allocating display...\n" );
     if( (display = malloc( sizeof( struct VoxelDisplay ) )) == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
@@ -27,6 +28,7 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
     display->ySize = ySize;
     display->zSize = zSize;
     display->totSize = xSize * ySize * zSize / 8;
+    printf( "Allocating raw data...\n" );
     if( (display->voxels = malloc( display->totSize )) == NULL ) {
         free( display );
         return VD_VOXELS_NOT_ALLOCATED;
@@ -34,11 +36,13 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
 
     void (*cleanupFunc)( struct VoxelDisplay * );
 #ifdef __linux
+    printf( "Compiling on Linux\n" );
     // Linux-specific networking
     // taken from http://www.linuxhowtos.org/C_C++/socket.htm
     cleanupFunc = cleanup_linux;
 
 #elif _WIN32
+    printf( "Compiling on Windoge\n" );
     // Windows-specific networking 
     // taken from http://johnnie.jerrata.com/winsocktutorial/
     cleanupFunc = cleanup_win32;
@@ -47,40 +51,33 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
 
     // This appears to be POSIX networking or something
     // Open the socket for data transmission
+    printf( "Allocating socket...\n" );
     if( (display->socket = socket( AF_INET, SOCK_STREAM, 0 )) < 0 ) {
         cleanupFunc( display );
         return VD_SOCKET_ERROR;
     }
 
-    // resolve the hostname - you could technically connect to a display
-    // running on a server far away somewhere
-    if( (display->server = gethostbyname( "localhost" )) == NULL ) {
-        cleanupFunc( display );
-        return VD_NETWORK_ERROR;
-    }
-  
-    // Copy the server properties into a place where they're more useful
+    // Load up the server properties
+    printf( "Copying server properties...\n" );
     memset( &(display->serv_addr), 0, sizeof( struct sockaddr_in ) );
     display->serv_addr.sin_family = AF_INET;
-
-#ifdef __linux
-    bcopy( (char*)display->server->h_name,
-           (char*)&(display->serv_addr.sin_addr.s_addr),
-           display->server->h_length );
-#endif
-
     display->serv_addr.sin_port = htons( 8999 );
-    
+    inet_aton( "127.0.0.1", &display->serv_addr.sin_addr.s_addr );
+
     // And now, ladies and gentlemen, the moment you've all been waiting for
     // Connection to the actual display!
+    printf( "Connecting %d to the display at %s:%d...\n",
+            display->socket,
+            inet_ntoa( display->serv_addr.sin_addr ),
+            ntohs( display->serv_addr.sin_port ) );
     if( connect( display->socket,
                  &display->serv_addr, 
                  sizeof( struct sockaddr_in ) ) < 0 ) {
-        free( display->server );
+        printf( "ERROR: Cannot connect to localhost. Error code %d\n", errno );
         cleanupFunc( display );
         return( VD_NO_CONNECTION );
     }
-
+    printf( "All operations completed successfully!\n" );
     return 0;
 }
 

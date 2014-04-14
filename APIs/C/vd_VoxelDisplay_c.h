@@ -8,6 +8,7 @@
 #define VD_VOXEL_DISPLAY_C_H
 // C headers
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
@@ -18,6 +19,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <strings.h>
+#include <arpa/inet.h>
+#include <errno.h>
 
 #elif _WIN32
 //Windows-specific includes
@@ -46,9 +50,7 @@ struct VoxelDisplay {
 #ifdef __linux
     int socket;
     struct sockaddr_in serv_addr;
-    struct hostent *server;
 #elif _WIN32
-    LPHOSTENT *server;
     SOCKET socket;
     SOCKADDR_IN serv_addr;
 #endif
