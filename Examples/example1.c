@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define FRAMERATE 1
+#define SECONDS_PER_FRAME 1
 
 int main( int argc, char **argv );
 void draw( struct VoxelDisplay *vd, int i );
@@ -42,9 +42,7 @@ int main( int argc, char **argv ) {
     time_t startTime = time( NULL );
     int i = 0;
     while( 1 ) {
-        if( difftime( time( NULL ), startTime ) > FRAMERATE ) {
-            printf( "Time for an update\n" );
-//            vd_printVoxels( vd->voxels, vd->xSize, vd->ySize, vd->zSize );
+        if( difftime( time( NULL ), startTime ) > SECONDS_PER_FRAME ) {
             draw( vd, i );
             vd_flush( vd );
             time( &startTime );

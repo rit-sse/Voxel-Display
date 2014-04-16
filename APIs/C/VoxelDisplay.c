@@ -132,17 +132,15 @@ int vd_flush( struct VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-    char *dataToSend;
-#ifdef MOXEL
-    // format for a Moxel display
     char *buffer = malloc( display->totSize * 6 * sizeof( char ) );
     memset( buffer, ' ', display->totSize * 6 * sizeof( char ) );
     int curPos = 0;
+#ifdef MOXEL
+    // format for a Moxel display
     for( char i = 0; i < display->zSize; i++ ) {
         for( char j = 0; j < display->ySize; j++ ) {
             for( char k = 0; k < display->xSize; k++ ) {
                 if( display->voxels[k + j * display->xSize + i * display->xSize * display->ySize] == 1 ) {
-                    printf( "writing voxel (%d, %d, %d) at %d\n", k, j, i, curPos );
                     buffer[curPos] = k + 48;
                     buffer[curPos + 2] = j + 48;
                     buffer[curPos + 4] = i + 48;
@@ -154,15 +152,16 @@ int vd_flush( struct VoxelDisplay *display ) {
     }
     buffer[curPos - 1] = '\n';
     buffer[curPos] = 0;
-    printf( "Sending %d bytes: ", curPos );
-    fwrite( buffer, sizeof( char ), curPos, stdout );
 #else
     // format for a Voxel display
+    // BE SURE TO SET CURPOS
 #endif
+    printf( "Sending %d bytes: ", curPos );
+    fwrite( buffer, sizeof( char ), curPos, stdout );
 #ifdef __linux
     write( display->socket, buffer, curPos );
 #elif _WIN32
-    send( display->socket, display->voxels, display->totSize, , 00 );
+    send( display->socket, buffer, curPos, 0 );
 #endif
     return 0;
 }
