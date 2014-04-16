@@ -89,7 +89,7 @@ struct VoxelDisplay {
 int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize );
 
 /*
- * \brief Generates a VoxelDisplay with 8 pixels in each of the x, y, and z
+ * \brief Generates a VoxelDisplay with 6 pixels in each of the x, y, and z
  *      directions
  *
  * \param [out] display A pointer to the memory to stick the created 
@@ -101,7 +101,7 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
  *      allocated
  *      0 if all operations succeed 
  */
-int vd_genDisplay8x8x8( struct VoxelDisplay *display );
+int vd_genDisplay6x6x6( struct VoxelDisplay *display );
 
 /*
  * \brief Sets the specified Vec3to the "on" state

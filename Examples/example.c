@@ -32,7 +32,7 @@ void draw( struct VoxelDisplay *vd, int i ) {
 
 int main( int argc, char **argv ) {
     struct VoxelDisplay *vd = malloc( sizeof( struct VoxelDisplay ) );
-    if( vd_genDisplay8x8x8( vd ) != 0 ) {
+    if( vd_genDisplay6x6x6( vd ) != 0 ) {
         printf( "ERROR: Could not create display. Shutting down...\n" );
         return 0;
     }

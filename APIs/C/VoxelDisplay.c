@@ -76,8 +76,8 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
     return 0;
 }
 
-int vd_genDisplay8x8x8( struct VoxelDisplay *display ) {
-    return vd_genDisplay( display, 8, 8, 8 );
+int vd_genDisplay6x6x6( struct VoxelDisplay *display ) {
+    return vd_genDisplay( display, 6, 6, 6 );
 }
  
 int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet ) {
@@ -143,17 +143,17 @@ int vd_flush( struct VoxelDisplay *display ) {
             for( char k = 0; k < display->xSize; k++ ) {
                 if( display->voxels[k + j * display->xSize + i * display->xSize * display->ySize] == 1 ) {
                     printf( "writing voxel (%d, %d, %d) at %d\n", k, j, i, curPos );
-                    buffer[curPos] = k;
-                    buffer[curPos + 2] = j;
-                    buffer[curPos + 4] = i;
+                    buffer[curPos] = k + 48;
+                    buffer[curPos + 2] = j + 48;
+                    buffer[curPos + 4] = i + 48;
                     buffer[curPos + 5] = ',';
                     curPos += 6;
                 }
             }
         }
     }
-    buffer[curPos] = '\n';
-    buffer[curPos + 1] = 0;
+    buffer[curPos - 1] = '\n';
+    buffer[curPos] = 0;
     printf( "Sending %d bytes: ", curPos );
     fwrite( buffer, sizeof( char ), curPos, stdout );
 #else
