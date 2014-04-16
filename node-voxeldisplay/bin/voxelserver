@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+var voxel = require('../index.js');
+var hw = voxel.HardwareDisplay;
+var net = require('net');
+var port = 8998;
+
+if (process.argv.length<3) {
+  console.log("Usage: voxelserver hardware-socket\n(For example: voxelserver COM5)");
+  return;
+}
+
+var device = new hw(process.argv[2]);
+var server = net.createServer(function(c) {
+  console.log('Client connected to server!');
+  c.on('end', function() {
+    console.log('Client disconnected from server!');
+  });
+  c.on('data', function(data) {    
+    device.write(data);
+  });
+  device.on('data', function(data) {
+    c.write(data);
+  });
+});
+server.listen(port, function() { 
+  console.log('Remote voxel display server up!');
+});

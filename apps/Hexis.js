@@ -57,7 +57,7 @@ The goal is to continue to fill as many layers as possible.
   }
 
   var maxx, maxy, maxz;
-  maxx = 8; maxy = 8; maxz = 8;
+  maxx = 6; maxy = 6; maxz = 6;
 
   var vd = new VoxelDisplay(maxx, maxy, maxz, Display); //Get me a new display driver to use
 
