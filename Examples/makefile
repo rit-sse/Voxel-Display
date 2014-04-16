@@ -23,3 +23,6 @@ example.o: example.c
 VoxelDisplay.o: ../APIs/C/VoxelDisplay.c
 	$(CC) $(COPTS) $(CLIBS) -c ../APIs/C/VoxelDisplay.c
 
+clean:
+	rm *.o
+

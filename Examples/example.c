@@ -43,6 +43,8 @@ int main( int argc, char **argv ) {
     int i = 0;
     while( 1 ) {
         if( difftime( time( NULL ), startTime ) > FRAMERATE ) {
+            printf( "Time for an update\n" );
+//            vd_printVoxels( vd->voxels, vd->xSize, vd->ySize, vd->zSize );
             draw( vd, i );
             vd_flush( vd );
             time( &startTime );

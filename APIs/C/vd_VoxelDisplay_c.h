@@ -28,6 +28,10 @@
 #include <windows.h>
 #include <winsock2.h>
 #endif
+
+/* Un-comment this line when working with the moxel display */
+#define MOXEL
+
 /* Useful structs */
 struct Vec3 {
     int x;
@@ -37,9 +41,8 @@ struct Vec3 {
 
 /*
  * voxels - A pointer to the raw Vec3data. char[0] & 1 is the origin.
- *  The first row continues for xSize bits. There are zSize rows of Vec3bits,
- *  each xSize bits long. This makes up one sheet. There are ySize sheets.
- *  There may or may not be problems when xSize isn't a power of eight.
+ *  The first row continues for xSize bytes. There are zSize rows,
+ *  each xSize bytes long. This makes up one sheet. There are ySize sheets.
  */
 struct VoxelDisplay {
     char *voxels;

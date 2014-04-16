@@ -23,22 +23,21 @@ int vd_genDisplay( struct VoxelDisplay *display, int xSize, int ySize, int zSize
     display->xSize = xSize;
     display->ySize = ySize;
     display->zSize = zSize;
-    display->totSize = xSize * ySize * zSize / 8;
+    display->totSize = xSize * ySize * zSize;
     printf( "Allocating raw data...\n" );
     if( (display->voxels = malloc( display->totSize )) == NULL ) {
         free( display );
         return VD_VOXELS_NOT_ALLOCATED;
     }
+    memset( display->voxels, '\0', display->totSize );
 
     void (*cleanupFunc)( struct VoxelDisplay * );
 #ifdef __linux
-    printf( "Compiling on Linux\n" );
     // Linux-specific networking
     // taken from http://www.linuxhowtos.org/C_C++/socket.htm
     cleanupFunc = cleanup_linux;
 
 #elif _WIN32
-    printf( "Compiling on Windoge\n" );
     // Windows-specific networking 
     // taken from http://johnnie.jerrata.com/winsocktutorial/
     cleanupFunc = cleanup_win32;
@@ -90,7 +89,7 @@ int vd_setVoxelOn( struct VoxelDisplay *display, struct Vec3 toSet ) {
         toSet.z > display->zSize ) {
         return VD_VOXEL_OUT_OF_RANGE;
     }
-    display->voxels[toSet.z + toSet.y * display->zSize / 8] |= (1 << toSet.x);
+    display->voxels[toSet.x + toSet.y * display->xSize + toSet.z * display->xSize * display->ySize] = 1;
     return 0;
  }
 
@@ -103,7 +102,7 @@ int vd_voxelOff( struct VoxelDisplay *display, struct Vec3 toSet ) {
         toSet.z > display->zSize ) {
         return VD_VOXEL_OUT_OF_RANGE;
     }
-    display->voxels[toSet.z + toSet.y * display->zSize / 8] &= ~(1 << toSet.x);
+    display->voxels[toSet.x + toSet.y * display->xSize + toSet.z * display->xSize * display->ySize] = 0;
     return 0;
 }
 
@@ -116,9 +115,10 @@ int vd_toggleVoxel( struct VoxelDisplay *display, struct Vec3 toToggle ) {
         toToggle.z > display->zSize ) {
         return VD_VOXEL_OUT_OF_RANGE;
     }
-    display->voxels[toToggle.z + toToggle.y * display->zSize / 8] ^= (1 << toToggle.x);
+    display->voxels[toToggle.x + toToggle.y * display->xSize + toToggle.z * display->xSize * display->ySize] ^= 1;
     return 0;
 }
+
 
 int vd_clear( struct VoxelDisplay *display ) {
     if( display == NULL ) {
@@ -132,8 +132,35 @@ int vd_flush( struct VoxelDisplay *display ) {
     if( display == NULL ) {
         return VD_DISPLAY_NOT_ALLOCATED;
     }
-#ifdef linux
-    write( display->socket, display->voxels, display->totSize );
+    char *dataToSend;
+#ifdef MOXEL
+    // format for a Moxel display
+    char *buffer = malloc( display->totSize * 6 * sizeof( char ) );
+    memset( buffer, ' ', display->totSize * 6 * sizeof( char ) );
+    int curPos = 0;
+    for( char i = 0; i < display->zSize; i++ ) {
+        for( char j = 0; j < display->ySize; j++ ) {
+            for( char k = 0; k < display->xSize; k++ ) {
+                if( display->voxels[k + j * display->xSize + i * display->xSize * display->ySize] == 1 ) {
+                    printf( "writing voxel (%d, %d, %d) at %d\n", k, j, i, curPos );
+                    buffer[curPos] = k;
+                    buffer[curPos + 2] = j;
+                    buffer[curPos + 4] = i;
+                    buffer[curPos + 5] = ',';
+                    curPos += 6;
+                }
+            }
+        }
+    }
+    buffer[curPos] = '\n';
+    buffer[curPos + 1] = 0;
+    printf( "Sending %d bytes: ", curPos );
+    fwrite( buffer, sizeof( char ), curPos, stdout );
+#else
+    // format for a Voxel display
+#endif
+#ifdef __linux
+    write( display->socket, buffer, curPos );
 #elif _WIN32
     send( display->socket, display->voxels, display->totSize, , 00 );
 #endif
@@ -155,5 +182,17 @@ int vd_setVoxels( struct VoxelDisplay *display, char *data ) {
     }
     memcpy( display->voxels, data, display->totSize );
     return 0;
+}
+
+void vd_printVoxels( char *data, int xSize, int ySize, int zSize ) {
+    for( int z = 0; z < zSize; z++ ) {
+        for( int y = 0; y < ySize; y++ ) {
+            for( int x = 0; x < xSize; x++ ) {
+                printf( "%d ", data[x + y * xSize + z * xSize * ySize] );
+            }
+            printf( "\n" );
+        }
+        printf( "\n\n" );
+    }
 }
 
