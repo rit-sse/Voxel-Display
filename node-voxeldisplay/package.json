@@ -1,6 +1,6 @@
 {
-  "name": "node-voxeldisplay",
-  "version": "0.0.0",
+  "name": "voxeldisplay",
+  "version": "0.0.1",
   "description": "Node bindings for the SSE Voxel Display serial connection.",
   "main": "index.js",
   "scripts": {

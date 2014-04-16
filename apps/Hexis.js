@@ -26,12 +26,13 @@ The goal is to continue to fill as many layers as possible.
     };
     VoxelDisplay = window.VoxelDisplay;
     Display = MockDisplay;
+    setIntv = setInterval;
     clrTimer = window.clearInterval;
   } else {
     KEY_SPACE = ' ';//32;
     KEY_W = 'w';//87;
     KEY_A = 'a';//65;
-    KEY_S = 'a';//83;
+    KEY_S = 's';//83;
     KEY_D = 'd';//68;
     KEY_Q = 'q';//81;
     KEY_E = 'e';//69;
@@ -39,21 +40,30 @@ The goal is to continue to fill as many layers as possible.
     clrTimer = clearInterval;
 
     var handle = function(e) {};
-    var stdin = process.openStdin(); 
-    require('tty').setRawMode(true);  
+    process.stdin.setRawMode(true);  
 
-    stdin.on('keypress', function(chunk, key) {
-      if (key && key!==null)
-        handle({keyCode: key.name});
+    var StringDecoder = require('string_decoder').StringDecoder;
+    var keypressDecoder = new StringDecoder('utf8');
+    
+    process.stdin.on('data', function(chunk) {
+      if (chunk && chunk!==null) {
+        var k = keypressDecoder.write(chunk);
+        if (chunk[0]===0x03) {//Ctrl-C 
+          console.log('Quitting.');
+          process.exit(0);  
+        }
+        handle({keyCode: k, preventDefault: function(){}});
+      }
     });
     Keybinder = function(handler) {
       handle = handler;
     };
-    process.stdin.resume();
 
     var VD = require("voxeldisplay");
     VoxelDisplay = VD.VoxelDisplay;
-    Display = VD.HardwareDisplay("COM6"); //Should pull from command line args
+    Display = new VD.HardwareDisplay("COM6"); //Should pull from command line args
+    setIntv = setInterval;
+    
   }
 
   var maxx, maxy, maxz;
@@ -518,9 +528,10 @@ The goal is to continue to fill as many layers as possible.
   Gamestate.prototype.begin = function() {
     //Start game loop
     var self = this;
-    this.loopid = setInterval(function() {
+    this.loopid = setIntv(function() {
       self.tick();
-    }, 0.1); //Tick every 10th of a second
+    }, 10); //Tick every 1/100th of a second
+    this.tick();
   };
 
   Gamestate.prototype.stop = function() {
@@ -535,24 +546,31 @@ The goal is to continue to fill as many layers as possible.
     switch (k) {
       case KEY_W:
         gs.state = gs.state.up();
+        console.log('Up');
         break;
       case KEY_A:
         gs.state = gs.state.left();
+        console.log('Left');
         break;
       case KEY_S:
         gs.state = gs.state.down();
+        console.log('Down');
         break;
       case KEY_D:
         gs.state = gs.state.right();
+        console.log('Right');
         break;
       case KEY_Q:
         gs.state = gs.state.rotateleft();
+        console.log('Rotate left');
         break;
       case KEY_E:
         gs.state = gs.state.rotateright();
+        console.log('Rotate right');
         break;
       case KEY_SPACE:
         gs.state = gs.state.confirm();
+        console.log('Drop');
         evt.preventDefault();
         break;
       default:

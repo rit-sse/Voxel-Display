@@ -150,10 +150,10 @@
   };
   
   //Values in comments are more correct, IMO
-  VoxelDisplay.prototype.startByte = '^';//0x80;
-  VoxelDisplay.prototype.endByte = '$';//0xff;
-  VoxelDisplay.prototype.highByte = '1';//1;
-  VoxelDisplay.prototype.lowByte = '0';//0;
+  VoxelDisplay.prototype.startByte = '^'.charCodeAt(0);//0x80;
+  VoxelDisplay.prototype.endByte = '$'.charCodeAt(0);//0xff;
+  VoxelDisplay.prototype.highByte = '1'.charCodeAt(0);//1;
+  VoxelDisplay.prototype.lowByte = '0'.charCodeAt(0);//0;
 
   if (typeof process === 'undefined' || !process.versions) {
     window.VoxelDisplay = VoxelDisplay;

@@ -52,7 +52,7 @@ XPlaneBuilder.prototype.handleByte = function(byte){
       return new Awaiting(this.mock);
     }
     default: {
-      this.xplanes[this.plane][this.row][this.zlevel] = byte;
+      this.xplanes[this.plane][this.row][this.zlevel] = (byte===this.mock.vd.highByte);
       this.zlevel += 1;
       if (this.zlevel>=this.mock.height) {
         this.zlevel = 0;
@@ -98,7 +98,7 @@ YPlaneBuilder.prototype.handleByte = function(byte){
       return new Awaiting(this.mock);
     }
     default: {
-      this.yplanes[this.plane][this.row][this.zlevel] = byte;
+      this.yplanes[this.plane][this.row][this.zlevel] = (byte===this.mock.vd.highByte);
       this.zlevel += 1;
       if (this.zlevel>=this.mock.height) {
         this.zlevel = 0;
