@@ -32,17 +32,17 @@ class Snake:
 	def update_direction(self, event):
 		print("new direction %r" % event.char)
 		direction = event.char
-		if (direction == 'q'):
+		if (direction == 'q' and self.direction != 1):
 			self.direction = 0
-		elif (direction == 'a'):
+		elif (direction == 'a' and self.direction != 0):
 			self.direction = 1
-		elif (direction == 'w'):
+		elif (direction == 'w' and self.direction != 3):
 			self.direction = 2
-		elif (direction == 's'):
+		elif (direction == 's' and self.direction != 2):
 			self.direction = 3
-		elif (direction == 'e'):
+		elif (direction == 'e' and self.direction != 5):
 			self.direction = 4
-		elif (direction == 'd'):
+		elif (direction == 'd' and self.direction != 4):
 			self.direction = 5
 			
 	def update_snake(self):
@@ -69,7 +69,7 @@ class Snake:
 			self.game_over = True
 		if (self.head == self.rat):
 			self.size = self.size + 1
-			self.rat = randomPosition(8)
+			self.rat = (self.size * 5, 4, 4)
 		if (self.game_over != True):
 			self.tk.after(250, self.update_snake)
 			
@@ -87,7 +87,7 @@ def newGame():
 	voxel = VoxelDisplay()
 	snake = Snake(voxel, can)
 		
-	top.after(500, snake.update_snake)
+	top.after(1500, snake.update_snake)
 	can.bind("<Key>", snake.update_direction)
 	
 	top.mainloop()
